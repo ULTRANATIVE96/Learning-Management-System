@@ -18,7 +18,7 @@ public class Notification {
     private String type; // mark, content, deadline, ai, system
     private String title;
     
-    @Column(length = 2000)
+    @Column(name = "description", length = 2000)
     private String desc;
     
     private String time;
