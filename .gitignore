@@ -1,0 +1,41 @@
+# Logs and build directories
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+node_modules
+dist
+dist-ssr
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Java Backend specifics
+backend/target/
+backend/bin/
+backend/data/
+backend/uploads/
+
+# IDE and System Files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.metadata/
+.classpath
+.project
+.settings/
+bin/
