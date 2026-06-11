@@ -17,3 +17,6 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('SW registration failed:', err));
   });
 }
+
+// Force clean redeploy on Vercel to inject new environment variables
+
