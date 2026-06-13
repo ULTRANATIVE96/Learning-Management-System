@@ -1,78 +1,78 @@
 @import "tailwindcss";
 
 @theme {
-  /* Reddish / Coral scales */
-  --color-indigo-50: #fff5f5;
-  --color-indigo-100: #ffe3e3;
-  --color-indigo-200: #ffc9c9;
-  --color-indigo-300: #ffa8a8;
-  --color-indigo-400: #ff8787;
-  --color-indigo-500: #ff6b6b;
-  --color-indigo-600: #dc2626; /* Reddish */
-  --color-indigo-700: #b91c1c;
-  --color-indigo-800: #991b1b;
-  --color-indigo-900: #7f1d1d;
-  --color-indigo-950: #450a0a;
+  /* Minimalistic Black & White scales */
+  --color-indigo-50: #f9fafb;
+  --color-indigo-100: #f3f4f6;
+  --color-indigo-200: #e5e7eb;
+  --color-indigo-300: #d1d5db;
+  --color-indigo-400: #9ca3af;
+  --color-indigo-500: #6b7280;
+  --color-indigo-600: #111827; /* Dark Gray / Black for primary actions */
+  --color-indigo-700: #030712;
+  --color-indigo-800: #000000;
+  --color-indigo-900: #000000;
+  --color-indigo-950: #000000;
 
-  /* White & Yellow/Amber scale */
-  --color-slate-50: #fffbeb; /* Mostly White/cream background in day */
-  --color-slate-100: #fef3c7; /* Light yellow shadow */
-  --color-slate-200: #fde68a; /* Yellow border */
-  --color-slate-300: #fcd34d;
-  --color-slate-400: #fbbf24;
-  --color-slate-500: #f59e0b; /* Yellow */
-  --color-slate-600: #d97706;
-  --color-slate-700: #b45309;
-  --color-slate-800: #3f0707; /* Dark reddish brown for night elements */
-  --color-slate-900: #2a0505; /* Darker reddish brown for night sidebar/navbar */
-  --color-slate-950: #140101; /* Deepest night-red black for dark mode body background */
-  --color-slate-955: #0a0101; /* Deepest black-red background for media players/modals */
-  --color-red-650: #dc2626; /* Day theme red accents */
+  /* White & Gray background scale */
+  --color-slate-50: #ffffff; /* Pure white background in day */
+  --color-slate-100: #f9fafb;
+  --color-slate-200: #f3f4f6;
+  --color-slate-300: #e5e7eb;
+  --color-slate-400: #d1d5db;
+  --color-slate-500: #9ca3af;
+  --color-slate-600: #6b7280;
+  --color-slate-700: #4b5563;
+  --color-slate-800: #374151; 
+  --color-slate-900: #1f2937;
+  --color-slate-950: #111827; 
+  --color-slate-955: #030712;
+  --color-red-650: #000000; /* Day theme black accents */
 
-  /* Map blue to yellow/amber */
-  --color-blue-50: #fffbeb;
-  --color-blue-100: #fef3c7;
-  --color-blue-200: #fde68a;
-  --color-blue-300: #fcd34d;
-  --color-blue-400: #fbbf24;
-  --color-blue-500: #f59e0b;
-  --color-blue-600: #d97706;
-  --color-blue-700: #b45309;
+  /* Map blue to grayscale */
+  --color-blue-50: #f9fafb;
+  --color-blue-100: #f3f4f6;
+  --color-blue-200: #e5e7eb;
+  --color-blue-300: #d1d5db;
+  --color-blue-400: #9ca3af;
+  --color-blue-500: #6b7280;
+  --color-blue-600: #4b5563;
+  --color-blue-700: #374151;
 
-  /* Map purple to reddish */
-  --color-purple-50: #fff5f5;
-  --color-purple-100: #ffe3e3;
-  --color-purple-200: #ffc9c9;
-  --color-purple-300: #ffa8a8;
-  --color-purple-400: #ff8787;
-  --color-purple-500: #ff6b6b;
-  --color-purple-600: #dc2626;
-  --color-purple-700: #b91c1c;
+  /* Map purple to grayscale */
+  --color-purple-50: #f9fafb;
+  --color-purple-100: #f3f4f6;
+  --color-purple-200: #e5e7eb;
+  --color-purple-300: #d1d5db;
+  --color-purple-400: #9ca3af;
+  --color-purple-500: #6b7280;
+  --color-purple-600: #4b5563;
+  --color-purple-700: #374151;
 
-  /* Map green/emerald to yellow/amber */
-  --color-green-50: #fffbeb;
-  --color-green-100: #fef3c7;
-  --color-green-200: #fde68a;
-  --color-green-300: #fcd34d;
-  --color-green-400: #fbbf24;
-  --color-green-500: #f59e0b;
-  --color-green-600: #d97706;
-  --color-green-700: #b45309;
+  /* Map green/emerald to grayscale */
+  --color-green-50: #f9fafb;
+  --color-green-100: #f3f4f6;
+  --color-green-200: #e5e7eb;
+  --color-green-300: #d1d5db;
+  --color-green-400: #9ca3af;
+  --color-green-500: #6b7280;
+  --color-green-600: #4b5563;
+  --color-green-700: #374151;
 
-  --color-emerald-50: #fffbeb;
-  --color-emerald-100: #fef3c7;
-  --color-emerald-200: #fde68a;
-  --color-emerald-300: #fcd34d;
-  --color-emerald-400: #fbbf24;
-  --color-emerald-500: #f59e0b;
-  --color-emerald-600: #d97706;
-  --color-emerald-700: #b45309;
+  --color-emerald-50: #f9fafb;
+  --color-emerald-100: #f3f4f6;
+  --color-emerald-200: #e5e7eb;
+  --color-emerald-300: #d1d5db;
+  --color-emerald-400: #9ca3af;
+  --color-emerald-500: #6b7280;
+  --color-emerald-600: #4b5563;
+  --color-emerald-700: #374151;
   
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   
-  --shadow-soft: 0 4px 20px -2px rgba(220, 38, 38, 0.05);
-  --shadow-premium: 0 10px 30px -5px rgba(220, 38, 38, 0.1), 0 4px 6px -2px rgba(220, 38, 38, 0.05);
+  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .dark {
