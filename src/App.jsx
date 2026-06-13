@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Layout from './components/layout/Layout';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Modules from './pages/Modules';
-import Marks from './pages/Marks';
-import Content from './pages/Content';
-import ClassList from './pages/ClassList';
-import LiveClass from './pages/LiveClass';
-import Assignments from './pages/Assignments';
-import Profile from './pages/Profile';
-import Notifications from './pages/Notifications';
 
-// Lecturer Pages
-import LecturerDashboard from './pages/LecturerDashboard';
-import ManageMarks from './pages/ManageMarks';
-import UploadResources from './pages/UploadResources';
-import HostLiveClass from './pages/HostLiveClass';
-import ManageAnnouncements from './pages/ManageAnnouncements';
+// Lazy load Student Pages
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Modules = lazy(() => import('./pages/Modules'));
+const Marks = lazy(() => import('./pages/Marks'));
+const Content = lazy(() => import('./pages/Content'));
+const ClassList = lazy(() => import('./pages/ClassList'));
+const LiveClass = lazy(() => import('./pages/LiveClass'));
+const Assignments = lazy(() => import('./pages/Assignments'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+
+// Lazy load Lecturer Pages
+const LecturerDashboard = lazy(() => import('./pages/LecturerDashboard'));
+const ManageMarks = lazy(() => import('./pages/ManageMarks'));
+const UploadResources = lazy(() => import('./pages/UploadResources'));
+const HostLiveClass = lazy(() => import('./pages/HostLiveClass'));
+const ManageAnnouncements = lazy(() => import('./pages/ManageAnnouncements'));
 
 function App() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -33,7 +35,6 @@ function App() {
     return 'dashboard';
   });
   
-  const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Auto-route on direct URL query parameter (e.g. ?page=live)
@@ -49,15 +50,6 @@ function App() {
   useEffect(() => {
     setSearchQuery('');
   }, [activePage]);
-
-  // Persistence for dark mode
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   // Keep local storage in sync
   useEffect(() => {
@@ -132,34 +124,38 @@ function App() {
     <Layout 
       activePage={activePage} 
       setActivePage={setActivePage}
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
       user={currentUser}
       onLogout={handleLogout}
       searchQuery={searchQuery}
       setSearchQuery={setSearchQuery}
     >
       <div className="animate-in fade-in duration-500">
-        {renderPage()}
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          {renderPage()}
+        </Suspense>
       </div>
       
       {/* Global Floating Action Button */}
       <button className="fixed bottom-8 right-8 w-14 h-14 bg-indigo-600 text-white rounded-2xl shadow-2xl shadow-indigo-600/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
         <div className="absolute bottom-16 right-0 scale-0 group-hover:scale-100 transition-all origin-bottom-right space-y-3 pb-4">
           <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'manage_announcements' : 'dashboard')}>
-            <span className="bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
               {isLecturer ? 'Post Announcement' : 'Ask AI'}
             </span>
             <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg">✨</div>
           </div>
           <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'upload_resources' : 'assignments')}>
-            <span className="bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
               {isLecturer ? 'Upload Note' : 'New Assignment'}
             </span>
             <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">📝</div>
           </div>
           <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'host_live' : 'live')}>
-            <span className="bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
               {isLecturer ? 'Host Class' : 'Join Class'}
             </span>
             <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-lg">🎥</div>

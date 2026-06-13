@@ -696,12 +696,12 @@ export default function HostLiveClass({ user, searchQuery }) {
       {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Host Live Session</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Host Live Session</h1>
+          <p className="text-slate-400 mt-1">
             Broadcast lectures using HTML5 webcam stream and manage recordings for students.
           </p>
         </div>
-        <div className="p-1 px-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
+        <div className="p-1 px-3 bg-indigo-900/30 rounded-xl border border-indigo-100 border-indigo-800/30 text-indigo-400 text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
           <Sparkles className="w-3.5 h-3.5" />
           <span>Divine University Live Hub</span>
         </div>
@@ -712,13 +712,13 @@ export default function HostLiveClass({ user, searchQuery }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Configure broadcast card */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 shadow-xl shadow-slate-100/30 dark:shadow-none space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl shrink-0">
+            <div className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6 shadow-xl shadow-slate-100/30 shadow-none space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl shrink-0">
                   <Camera className="w-6 h-6 animate-pulse" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-950 dark:text-white">Configure Broadcast Room</h2>
+                  <h2 className="text-base font-bold text-slate-950 text-white">Configure Broadcast Room</h2>
                   <p className="text-[11px] text-slate-500 mt-0.5">Select a course module and enter a topic to begin.</p>
                 </div>
               </div>
@@ -730,7 +730,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                   <select
                     value={selectedModule}
                     onChange={(e) => setSelectedModule(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                   >
                     {modules.map((m) => (
                       <option key={m.id} value={m.code}>{m.code} - {m.name}</option>
@@ -747,11 +747,11 @@ export default function HostLiveClass({ user, searchQuery }) {
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
                     placeholder="e.g. Integration by parts"
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                   />
                 </div>
 
-                <div className="bg-indigo-500/5 border border-indigo-500/10 text-indigo-700 dark:text-indigo-400 rounded-xl p-3.5 text-[11px] leading-relaxed flex gap-2">
+                <div className="bg-indigo-500/5 border border-indigo-500/10 text-indigo-700 text-indigo-400 rounded-xl p-3.5 text-[11px] leading-relaxed flex gap-2">
                   <Info className="w-4 h-4 shrink-0 text-indigo-500 mt-0.5" />
                   <span>
                     <strong>Camera Permission:</strong> Starting this session will request your browser to access your webcam and mic.
@@ -771,10 +771,10 @@ export default function HostLiveClass({ user, searchQuery }) {
 
           {/* Recordings Management dashboard */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 shadow-xl shadow-slate-100/30 dark:shadow-none space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6 shadow-xl shadow-slate-100/30 shadow-none space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
-                  <h2 className="text-base font-bold text-slate-955 dark:text-white">Manage Saved Video Recordings</h2>
+                  <h2 className="text-base font-bold text-slate-955 text-white">Manage Saved Video Recordings</h2>
                   <p className="text-[11px] text-slate-505 mt-0.5">Watch, download, edit, or delete previous recordings.</p>
                 </div>
                 
@@ -786,7 +786,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                     placeholder="Search recordings..."
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                    className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                   />
                 </div>
               </div>
@@ -800,7 +800,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                 ) : (
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      <tr className="border-b border-slate-800 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         <th className="pb-3 font-semibold">Subject</th>
                         <th className="pb-3 font-semibold">Title</th>
                         <th className="pb-3 font-semibold">Date</th>
@@ -808,20 +808,20 @@ export default function HostLiveClass({ user, searchQuery }) {
                         <th className="pb-3 text-right font-semibold">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                    <tbody className="divide-y divide-slate-800/50">
                       {filteredRecordings.map((rec) => {
                         const moduleObj = modules.find(m => m.code === rec.moduleCode);
                         return (
-                          <tr key={rec.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors">
+                          <tr key={rec.id} className="hover:bg-slate-950/50 hover:bg-slate-800/10 transition-colors">
                             <td className="py-3.5 pr-2">
-                              <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded">
+                              <span className="px-2 py-0.5 bg-indigo-900/30 text-indigo-400 text-[10px] font-bold rounded">
                                 {rec.moduleCode}
                               </span>
                               <span className="block text-[9px] text-slate-400 mt-0.5 font-semibold truncate max-w-[100px]" title={moduleObj?.name}>
                                 {moduleObj?.name || 'Class Session'}
                               </span>
                             </td>
-                            <td className="py-3.5 font-bold text-slate-800 dark:text-slate-100 pr-2 max-w-[180px] truncate" title={rec.title}>
+                            <td className="py-3.5 font-bold text-slate-100 pr-2 max-w-[180px] truncate" title={rec.title}>
                               {rec.title}
                             </td>
                             <td className="py-3.5 text-slate-500 pr-2">
@@ -834,7 +834,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => setWatchingRecording(rec)}
-                                  className="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 rounded-lg text-slate-500 dark:text-slate-400 transition-colors"
+                                  className="p-1.5 bg-slate-800 hover:bg-indigo-600 hover:text-white hover:bg-indigo-600 rounded-lg text-slate-400 transition-colors"
                                   title="Watch Video"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
@@ -844,21 +844,21 @@ export default function HostLiveClass({ user, searchQuery }) {
                                   download={rec.title}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 rounded-lg text-slate-500 dark:text-slate-400 transition-colors flex items-center justify-center"
+                                  className="p-1.5 bg-slate-800 hover:bg-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg text-slate-400 transition-colors flex items-center justify-center"
                                   title="Download Video"
                                 >
                                   <Download className="w-3.5 h-3.5" />
                                 </a>
                                 <button
                                   onClick={() => handleStartEdit(rec)}
-                                  className="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-amber-600 hover:text-white dark:hover:bg-amber-600 rounded-lg text-slate-500 dark:text-slate-400 transition-colors"
+                                  className="p-1.5 bg-slate-800 hover:bg-amber-600 hover:text-white hover:bg-amber-600 rounded-lg text-slate-400 transition-colors"
                                   title="Edit Info"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteRecording(rec.id)}
-                                  className="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 rounded-lg text-slate-500 dark:text-slate-400 transition-colors"
+                                  className="p-1.5 bg-slate-800 hover:bg-rose-600 hover:text-white hover:bg-rose-600 rounded-lg text-slate-400 transition-colors"
                                   title="Delete Recording"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -890,8 +890,8 @@ export default function HostLiveClass({ user, searchQuery }) {
                 className={`w-full h-full object-contain ${isScreenSharing ? '' : 'transform scale-x-[-1]'} ${(!cameraActive || !mediaStream) ? 'hidden' : ''}`}
               />
               {(!cameraActive || !mediaStream) && (
-                <div className="text-center text-slate-600 space-y-3">
-                  <VideoOff className="w-16 h-16 text-slate-700 mx-auto" />
+                <div className="text-center text-slate-400 space-y-3">
+                  <VideoOff className="w-16 h-16 text-slate-300 mx-auto" />
                   <p className="font-bold text-slate-500">Camera Feed Disabled</p>
                 </div>
               )}
@@ -954,15 +954,15 @@ export default function HostLiveClass({ user, searchQuery }) {
             </div>
 
             {/* Invite Controls Section */}
-            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <h4 className="font-bold text-xs text-slate-800 dark:text-slate-200">Invite Students to Stream</h4>
+                <h4 className="font-bold text-xs text-slate-200">Invite Students to Stream</h4>
                 <p className="text-[10px] text-slate-400 mt-0.5">Let students know they can join this live session.</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopyInviteLink}
-                  className="px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl text-slate-750 dark:text-slate-300 transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl text-slate-750 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5 text-indigo-500" />
                   <span>Copy Invite Link</span>
@@ -979,7 +979,7 @@ export default function HostLiveClass({ user, searchQuery }) {
 
             {/* End session buttons */}
             <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+              <span className="text-xs text-slate-400 font-semibold">
                 Room connection active • ws://localhost:8080/chat
               </span>
               <button
@@ -993,13 +993,13 @@ export default function HostLiveClass({ user, searchQuery }) {
           </div>
 
           {/* Active Chat Column */}
-          <div className="xl:col-span-1 h-[500px] xl:h-auto flex flex-col bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl overflow-hidden shadow-lg">
-            <div className="p-4 bg-slate-50 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
+          <div className="xl:col-span-1 h-[500px] xl:h-auto flex flex-col bg-slate-900 border border-slate-800/50 rounded-3xl overflow-hidden shadow-lg">
+            <div className="p-4 bg-slate-950/40 border-b border-slate-800 flex items-center justify-between">
+              <h3 className="font-bold text-white flex items-center gap-2 text-sm">
                 <MessageSquare className="w-4.5 h-4.5 text-indigo-500" />
                 <span>Lecture Chat Room</span>
               </h3>
-              <span className="px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 dark:text-slate-400 uppercase">
+              <span className="px-2 py-0.5 bg-slate-800 text-[10px] font-bold rounded text-slate-400 uppercase">
                 Active
               </span>
             </div>
@@ -1008,9 +1008,9 @@ export default function HostLiveClass({ user, searchQuery }) {
             <div className="flex-1 p-4 overflow-y-auto space-y-3.5 no-scrollbar">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 py-12">
-                  <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-700 mb-2 animate-bounce" />
+                  <MessageSquare className="w-8 h-8 text-slate-300 text-slate-300 mb-2 animate-bounce" />
                   <p className="font-bold text-sm text-slate-500">Live chat is ready</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-600 mt-0.5">Students can ask questions here.</p>
+                  <p className="text-xs text-slate-400 text-slate-400 mt-0.5">Students can ask questions here.</p>
                 </div>
               ) : (
                 messages.map((msg, index) => {
@@ -1019,7 +1019,7 @@ export default function HostLiveClass({ user, searchQuery }) {
 
                   if (isAlert) {
                     return (
-                      <div key={index} className="text-center py-1.5 px-3 bg-slate-50 dark:bg-slate-955/50 rounded-xl border border-slate-100 dark:border-slate-800/50 text-[10px] font-semibold text-slate-400">
+                      <div key={index} className="text-center py-1.5 px-3 bg-slate-955/50 rounded-xl border border-slate-800/50 text-[10px] font-semibold text-slate-400">
                         {msg.content}
                       </div>
                     );
@@ -1031,7 +1031,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                       className={`flex flex-col max-w-[85%] space-y-1 ${isSelf ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                     >
                       <span className="text-[10px] font-bold text-slate-400">{msg.sender}</span>
-                      <div className={`p-3 rounded-2xl text-xs leading-relaxed ${isSelf ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none'}`}>
+                      <div className={`p-3 rounded-2xl text-xs leading-relaxed ${isSelf ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>
                         {msg.content}
                       </div>
                     </div>
@@ -1042,13 +1042,13 @@ export default function HostLiveClass({ user, searchQuery }) {
             </div>
 
             {/* Input form */}
-            <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 flex items-center gap-2">
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-800 bg-slate-950/40 flex items-center gap-2">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Type message to room..."
-                className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 outline-none"
+                className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 outline-none"
               />
               <button
                 type="submit"
@@ -1064,9 +1064,9 @@ export default function HostLiveClass({ user, searchQuery }) {
       {/* Edit Recording Modal */}
       {editingRecording && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-955/65 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Edit Recording Metadata</h3>
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="font-bold text-sm text-white">Edit Recording Metadata</h3>
               <button 
                 onClick={() => setEditingRecording(null)} 
                 className="p-1 text-slate-555 hover:text-rose-500 transition-colors cursor-pointer"
@@ -1082,7 +1082,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
               </div>
               <div className="space-y-1">
@@ -1090,7 +1090,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                 <select
                   value={editModule}
                   onChange={(e) => setEditModule(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-805 dark:text-slate-105 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-805 text-slate-105 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
                 >
                   {modules.map((m) => (
                     <option key={m.id} value={m.code}>{m.code} - {m.name}</option>
@@ -1101,7 +1101,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                 <button
                   type="button"
                   onClick={() => setEditingRecording(null)}
-                  className="flex-1 py-2.5 bg-slate-150 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 bg-slate-150 bg-slate-800 hover:bg-slate-200 text-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>

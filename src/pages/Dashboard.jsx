@@ -94,15 +94,15 @@ export default function Dashboard() {
     <div className="space-y-8 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Welcome back, <span className="text-indigo-600">{studentName}!</span> 👋
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
+          <p className="text-slate-400 mt-2 text-lg">
             Your academic journey is looking <span className="font-bold text-green-500">strong</span> this semester.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="hidden sm:flex px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
+          <button className="hidden sm:flex px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-950 transition-all">
             View Schedule
           </button>
           <button className="btn-primary flex items-center gap-2 px-6 py-2.5 shadow-xl shadow-indigo-600/20">
@@ -122,13 +122,13 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Analytics Chart */}
-        <div className="lg:col-span-2 glass-card border border-slate-200/50 dark:border-slate-800/50">
+        <div className="lg:col-span-2 glass-card border border-slate-800/50">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Performance Analytics</h3>
-              <p className="text-sm text-slate-500 mt-1">Consistency over time</p>
+              <h3 className="text-xl font-bold text-white">Performance Analytics</h3>
+              <p className="text-sm text-[#4A5568] mt-1 font-medium">Consistency over time</p>
             </div>
-            <select className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-bold px-4 py-2 outline-none cursor-pointer focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            <select className="bg-slate-800 border-none rounded-xl text-sm font-bold px-4 py-2 outline-none cursor-pointer focus:ring-2 focus:ring-indigo-500/20 transition-all">
               <option>All Modules</option>
               <option>Mathematics</option>
               <option>Computer Science</option>
@@ -158,7 +158,7 @@ export default function Dashboard() {
                   itemStyle={{ color: '#fff' }}
                   labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
                 />
-                <Area type="monotone" dataKey="mark" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorMark)" />
+                <Area type="monotone" dataKey="mark" stroke="#4f46e5" strokeWidth={5} dot={{ r: 4, strokeWidth: 2, fill: '#ffffff', stroke: '#4f46e5' }} activeDot={{ r: 6, strokeWidth: 0, fill: '#4f46e5' }} fillOpacity={1} fill="url(#colorMark)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -167,7 +167,7 @@ export default function Dashboard() {
         {/* AI Suggestions */}
         <div className="glass-card bg-indigo-600 border-none relative overflow-hidden group flex flex-col justify-between">
           <div className="relative z-10 text-white">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+            <div className="w-12 h-12 bg-slate-900/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-2xl font-bold mb-2">Smart Insights</h3>
@@ -178,10 +178,10 @@ export default function Dashboard() {
                 { text: "You're struggling with Calculus derivatives. Try the new practice paper.", tag: "Mathematics 101" },
                 { text: "Your mark in CSC201 improved by 15%! Keep up the consistent study habit.", tag: "Achievement" }
               ].map((insight, i) => (
-                <div key={i} className="p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/20 transition-all cursor-pointer group/item">
-                  <p className="text-sm font-medium leading-relaxed">{insight.text}</p>
+                <div key={i} className="p-4 bg-slate-900/10 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-slate-900/20 transition-all cursor-pointer group/item">
+                  <p className="text-sm font-bold text-[#FFFFFF] leading-relaxed">{insight.text}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">{insight.tag}</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-slate-900 text-[#FEFCBF] px-2 py-1 rounded-md">{insight.tag}</span>
                     <ArrowRight className="w-3 h-3 opacity-0 group-hover/item:opacity-100 transform translate-x-0 group-hover/item:translate-x-1 transition-all" />
                   </div>
                 </div>
@@ -189,7 +189,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <button className="relative z-10 mt-8 w-full py-3 bg-white text-indigo-600 rounded-xl font-bold text-sm shadow-xl hover:shadow-white/20 transition-all active:scale-95">
+          <button className="relative z-10 mt-8 w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-xl hover:shadow-white/20 transition-all active:scale-95">
             Optimize Learning Path
           </button>
           
@@ -201,25 +201,25 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div className="glass-card">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Deadlines</h3>
-            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+            <h3 className="text-xl font-bold text-white">Deadlines</h3>
+            <div className="p-2 bg-slate-800 rounded-lg">
               <Calendar className="w-5 h-5 text-slate-500" />
             </div>
           </div>
           <div className="space-y-4">
             {deadlinesList.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all group">
+              <div key={item.id} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-900/50 hover:bg-slate-800 border border-transparent hover:border-slate-100 hover:border-slate-700 transition-all group">
                 <div className={cn(
                   "w-1.5 h-10 rounded-full shrink-0",
                   item.priority === 'high' ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]" : 
                   item.priority === 'medium' ? "bg-orange-500" : "bg-blue-500"
                 )} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-800 dark:text-white truncate group-hover:text-indigo-600 transition-colors">{item.title}</p>
+                  <p className="text-sm font-bold text-white truncate group-hover:text-indigo-600 transition-colors">{item.title}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{item.module}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{item.date}</p>
+                  <p className="text-xs font-bold text-slate-200">{item.date}</p>
                   <p className={cn(
                     "text-[10px] font-bold mt-0.5 uppercase",
                     item.priority === 'high' ? "text-red-500" : "text-slate-400"
@@ -228,7 +228,7 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
-          <button className="w-full mt-6 py-3 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-colors border-t border-slate-100 dark:border-slate-800 pt-6">
+          <button className="w-full mt-6 py-3 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-colors border-t border-slate-800 pt-6">
             View Academic Calendar
           </button>
         </div>
@@ -236,8 +236,8 @@ export default function Dashboard() {
         {/* Announcements Feed Widget */}
         <div className="glass-card">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Announcements</h3>
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600">
+            <h3 className="text-xl font-bold text-white">Announcements</h3>
+            <div className="p-2 bg-indigo-900/50 rounded-lg text-white">
               <Megaphone className="w-5 h-5" />
             </div>
           </div>
@@ -246,15 +246,15 @@ export default function Dashboard() {
               <p className="text-sm text-slate-500 italic text-center py-8">No announcements posted yet.</p>
             ) : (
               announcements.slice(0, 4).map((ann) => (
-                <div key={ann.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100/50 dark:border-slate-850 hover:border-indigo-500/30 transition-all">
+                <div key={ann.id} className="p-4 rounded-2xl bg-slate-900/50 border border-slate-850 hover:border-indigo-500/30 transition-all">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[9px] font-extrabold uppercase bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-md">
+                    <span className="text-[9px] font-extrabold uppercase bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-md">
                       {ann.moduleCode}
                     </span>
                     <span className="text-[10px] text-slate-450 font-medium">{ann.date}</span>
                   </div>
-                  <h4 className="font-bold text-slate-800 dark:text-white text-xs mt-2">{ann.title}</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                  <h4 className="font-bold text-white text-xs mt-2">{ann.title}</h4>
+                  <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                     {ann.content}
                   </p>
                 </div>
@@ -266,8 +266,8 @@ export default function Dashboard() {
         {/* Quick Shortcuts */}
         <div className="glass-card">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Quick Shortcuts</h3>
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600">
+            <h3 className="text-xl font-bold text-white">Quick Shortcuts</h3>
+            <div className="p-2 bg-indigo-900/50 rounded-lg text-white">
               <Lightbulb className="w-5 h-5" />
             </div>
           </div>
@@ -278,20 +278,20 @@ export default function Dashboard() {
               { label: 'Class List', icon: Users, color: 'bg-blue-500', desc: 'Classmates' },
               { label: 'Live Chat', icon: Video, color: 'bg-purple-500', desc: 'Tutor help' },
             ].map((action, i) => (
-              <button key={i} className="flex flex-col items-center text-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all hover-scale group">
+              <button key={i} className="flex flex-col items-center text-center p-4 rounded-2xl bg-slate-900/50 hover:bg-slate-800 border border-transparent hover:border-slate-100 hover:border-slate-700 transition-all hover-scale group">
                 <div className={cn(
                   "w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300", 
                   action.color
                 )}>
                   <action.icon className="w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-3">{action.label}</span>
+                <span className="text-xs font-bold text-slate-200 mt-3">{action.label}</span>
                 <span className="text-[9px] text-slate-500 mt-1 uppercase tracking-wider font-medium">{action.desc}</span>
               </button>
             ))}
           </div>
           
-          <div className="mt-6 p-4 bg-slate-900 dark:bg-slate-800 rounded-2xl flex items-center justify-between overflow-hidden relative">
+          <div className="mt-6 p-4 bg-slate-900 bg-slate-800 rounded-2xl flex items-center justify-between overflow-hidden relative">
             <div className="relative z-10">
               <h4 className="text-white font-bold text-xs">New feature available!</h4>
               <p className="text-slate-400 text-[10px] mt-0.5">Check out AI content summarizer.</p>

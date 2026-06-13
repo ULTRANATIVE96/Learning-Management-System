@@ -104,11 +104,11 @@ export default function Notifications({ setActivePage }) {
   };
 
   const colorMap = {
-    emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20",
-    indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20",
-    rose: "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20",
-    amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-100 dark:border-amber-500/20",
-    slate: "bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-100 dark:border-slate-500/20",
+    emerald: "bg-emerald-50 text-emerald-600 bg-emerald-500/10 text-emerald-400 border-emerald-100 border-emerald-500/20",
+    indigo: "bg-indigo-50 text-indigo-600 bg-indigo-500/10 text-indigo-400 border-indigo-100 border-indigo-500/20",
+    rose: "bg-rose-50 text-rose-600 bg-rose-500/10 text-rose-400 border-rose-100 border-rose-500/20",
+    amber: "bg-amber-50 text-amber-600 bg-amber-500/10 text-amber-400 border-amber-100 border-amber-500/20",
+    slate: "bg-slate-950 text-slate-400 bg-slate-500/10 text-slate-400 border-slate-500/20",
   };
 
   const iconColorMap = {
@@ -131,10 +131,10 @@ export default function Notifications({ setActivePage }) {
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Notifications
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
+          <p className="text-slate-400 mt-2 text-lg">
             Stay updated with your latest academic activity.
           </p>
         </div>
@@ -142,14 +142,14 @@ export default function Notifications({ setActivePage }) {
         <div className="flex items-center gap-3">
           <button 
             onClick={handleMarkAllRead}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-50 transition-all text-slate-600 dark:text-slate-300"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-950 transition-all text-slate-300"
           >
             <CheckCircle2 className="w-4 h-4" />
             Mark all read
           </button>
           <button 
             onClick={handleClearAll}
-            className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-rose-500 transition-colors"
+            className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-500 transition-colors"
             title="Clear all notifications"
           >
             <Trash2 className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function Notifications({ setActivePage }) {
                 onClick={() => handleNotificationClick(notif)}
                 className={cn(
                   "group relative overflow-hidden glass-card p-6 border transition-all duration-300 cursor-pointer",
-                  notif.isNew ? "ring-2 ring-indigo-500/20 border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900" : "opacity-80 hover:opacity-100"
+                  notif.isNew ? "ring-2 ring-indigo-500/20 border-indigo-200 border-indigo-800 bg-slate-900" : "opacity-80 hover:opacity-100"
                 )}
               >
                 <div className="flex items-start gap-6">
@@ -187,7 +187,7 @@ export default function Notifications({ setActivePage }) {
                     <div className="flex items-center justify-between gap-4">
                       <h3 className={cn(
                         "text-lg font-bold transition-colors",
-                        notif.isNew ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-300"
+                        notif.isNew ? "text-white" : "text-slate-300"
                       )}>
                         {notif.title}
                       </h3>
@@ -202,14 +202,14 @@ export default function Notifications({ setActivePage }) {
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed max-w-2xl">
+                    <p className="text-sm text-slate-400 mt-1 leading-relaxed max-w-2xl">
                       {notif.desc}
                     </p>
                     
                     <div className="flex items-center gap-4 mt-4">
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleNotificationClick(notif); }}
-                        className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline"
+                        className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:underline"
                       >
                         View Details
                       </button>

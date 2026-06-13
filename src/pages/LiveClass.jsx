@@ -338,7 +338,7 @@ export default function LiveClass({ searchQuery }) {
       {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
             Live Classes
             {activeLiveSessions.length > 0 && (
               <span className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full animate-pulse">
@@ -346,11 +346,11 @@ export default function LiveClass({ searchQuery }) {
               </span>
             )}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Join active broadcasts or view scheduled lectures.</p>
+          <p className="text-slate-400 mt-1">Join active broadcasts or view scheduled lectures.</p>
         </div>
         <button 
           onClick={() => alert("Simulating full calendar view loading...")}
-          className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
+          className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm font-medium hover:bg-slate-950 transition-colors flex items-center gap-2"
         >
           <Calendar className="w-4 h-4" />
           Full Schedule
@@ -373,18 +373,18 @@ export default function LiveClass({ searchQuery }) {
                     setHasJoinedStream(true);
                   }}
                   className={cn(
-                    "p-4 bg-white dark:bg-slate-900 border rounded-2xl cursor-pointer hover:shadow-lg transition-all duration-300 flex items-start gap-4 group relative overflow-hidden",
-                    isCurrentlySelected ? "border-indigo-500 ring-2 ring-indigo-500/10" : "border-slate-200/60 dark:border-slate-800"
+                    "p-4 bg-slate-900 border rounded-2xl cursor-pointer hover:shadow-lg transition-all duration-300 flex items-start gap-4 group relative overflow-hidden",
+                    isCurrentlySelected ? "border-indigo-500 ring-2 ring-indigo-500/10" : "border-slate-800"
                   )}
                 >
                   <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 animate-pulse">
                     <Video className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[9px] font-black uppercase text-red-500 tracking-wider bg-red-50 dark:bg-red-950/20 px-2 py-0.5 rounded-md">
+                    <span className="text-[9px] font-black uppercase text-red-500 tracking-wider bg-red-50 bg-red-950/20 px-2 py-0.5 rounded-md">
                       Live
                     </span>
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate mt-1.5 group-hover:text-indigo-600 transition-colors">
+                    <h4 className="font-bold text-sm text-white truncate mt-1.5 group-hover:text-indigo-600 transition-colors">
                       {session.title}
                     </h4>
                     <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{session.module} • {mObj?.lecturer || 'Lecturer'}</p>
@@ -418,7 +418,7 @@ export default function LiveClass({ searchQuery }) {
                 
                 {/* Floatings stream indicators */}
                 <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-red-600 text-white text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg tracking-wider animate-pulse flex items-center gap-1.5 shadow-md">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-ping" />
                   <span>Live Stream Feed</span>
                 </div>
                 
@@ -494,13 +494,13 @@ export default function LiveClass({ searchQuery }) {
                 
                 {/* Control Bar Mockup */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10">
-                  <button className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"><Mic className="w-5 h-5" /></button>
-                  <button className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"><Video className="w-5 h-5" /></button>
-                  <button className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"><Monitor className="w-5 h-5" /></button>
-                  <div className="w-px h-6 bg-white/20" />
+                  <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Mic className="w-5 h-5" /></button>
+                  <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Video className="w-5 h-5" /></button>
+                  <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Monitor className="w-5 h-5" /></button>
+                  <div className="w-px h-6 bg-slate-900/20" />
                   <button 
                     onClick={() => setSidebarTab('chat')}
-                    className={cn("p-2 rounded-lg transition-colors", sidebarTab === 'chat' ? "text-indigo-400" : "text-white hover:bg-white/20")}
+                    className={cn("p-2 rounded-lg transition-colors", sidebarTab === 'chat' ? "text-indigo-400" : "text-white hover:bg-slate-900/20")}
                   >
                     <MessageSquare className="w-5 h-5" />
                   </button>
@@ -522,16 +522,16 @@ export default function LiveClass({ searchQuery }) {
             {/* Subject Code, Module Name, Topic and Lecturer info */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white leading-tight">{activeSession.title}</h2>
+                <h2 className="text-2xl font-bold text-white leading-tight">{activeSession.title}</h2>
                 <div className="text-xs font-semibold text-slate-500 space-y-1 pt-1">
                   <p className="flex items-center gap-2">
-                    <span className="font-extrabold text-[10px] uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800/30">
+                    <span className="font-extrabold text-[10px] uppercase text-indigo-400 bg-indigo-900/30 px-2 py-0.5 rounded-md border border-indigo-100 border-indigo-800/30">
                       {activeSession.module}
                     </span>
                     <span>• {activeModuleObj?.name || 'Class Session'}</span>
                   </p>
-                  <p className="text-slate-400 dark:text-slate-550 font-bold">
-                    Lecturer/Group: <span className="text-slate-700 dark:text-slate-350">{activeModuleObj?.lecturer || 'Dr. Andrea Vine'}</span>
+                  <p className="text-slate-400 text-slate-550 font-bold">
+                    Lecturer/Group: <span className="text-slate-350">{activeModuleObj?.lecturer || 'Dr. Andrea Vine'}</span>
                   </p>
                 </div>
               </div>
@@ -550,11 +550,11 @@ export default function LiveClass({ searchQuery }) {
             </div>
 
             {/* Previous Session Recordings Catalog */}
-            <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="mt-8 pt-8 border-t border-slate-800/80">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Previous Session Recordings</h3>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <h3 className="text-lg font-bold text-white">Previous Session Recordings</h3>
+                  <p className="text-xs text-slate-400 text-slate-500 mt-0.5">
                     {localSearch ? "Showing search results across all modules" : `Showing recorded lectures for ${activeSession.module}`}
                   </p>
                 </div>
@@ -567,13 +567,13 @@ export default function LiveClass({ searchQuery }) {
                     placeholder="Search recordings..."
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full pl-9 pr-4 py-2 bg-slate-905 border border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
               </div>
 
               {filteredRecordings.length === 0 ? (
-                <div className="p-8 bg-slate-50 dark:bg-slate-900/40 rounded-2xl text-center text-slate-400 dark:text-slate-500 text-xs italic">
+                <div className="p-8 bg-slate-900/40 rounded-2xl text-center text-slate-400 text-slate-500 text-xs italic">
                   {localSearch ? "No recordings matched your search." : `No recorded lectures available for ${activeSession.module}.`}
                 </div>
               ) : (
@@ -587,21 +587,21 @@ export default function LiveClass({ searchQuery }) {
                           setActiveVideoUrl(rec.videoUrl);
                           setActiveVideoTitle(rec.title);
                         }}
-                        className="bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 hover:border-indigo-500 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all flex items-center gap-3.5 group relative"
+                        className="bg-slate-950 hover:bg-slate-900 border border-slate-800/50 hover:border-indigo-500 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all flex items-center gap-3.5 group relative"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                           <Play className="w-5 h-5 fill-current ml-0.5" />
                         </div>
                         <div className="overflow-hidden pr-10">
-                          <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          <h4 className="font-bold text-sm text-slate-100 truncate group-hover:text-indigo-600 group-hover:text-indigo-400 transition-colors">
                             {rec.title}
                           </h4>
                           <div className="flex flex-col text-[10px] text-slate-400 font-semibold mt-1 space-y-0.5">
-                            <span className="text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider text-[9px]">
+                            <span className="text-indigo-400 font-bold uppercase tracking-wider text-[9px]">
                               {rec.moduleCode} — {recModuleObj?.name || 'Class Session'}
                             </span>
                             <span className="truncate">Lecturer/Group: {recModuleObj?.lecturer || 'Dr. Andrea Vine'}</span>
-                            <span className="text-slate-400 dark:text-slate-500 font-normal">
+                            <span className="text-slate-400 text-slate-500 font-normal">
                               {rec.duration} • {rec.size} • {rec.uploadDate}
                             </span>
                           </div>
@@ -614,7 +614,7 @@ export default function LiveClass({ searchQuery }) {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()} // Prevent playing video on click
-                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-slate-150 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 rounded-xl text-slate-500 dark:text-slate-400 transition-colors flex items-center justify-center"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-slate-150 bg-slate-800 hover:bg-emerald-600 hover:text-white hover:bg-emerald-600 rounded-xl text-slate-400 transition-colors flex items-center justify-center"
                           title="Download Recording"
                         >
                           <Download className="w-4 h-4" />
@@ -630,12 +630,12 @@ export default function LiveClass({ searchQuery }) {
 
         {/* Sidebar Tabs (Chat & Schedule) */}
         <div className="flex flex-col space-y-6">
-          <div className="flex border-b border-slate-200 dark:border-slate-800 p-1 bg-slate-50 dark:bg-slate-900 rounded-xl">
+          <div className="flex border-b border-slate-800 p-1 bg-slate-900 rounded-xl">
             <button 
               onClick={() => setSidebarTab('chat')}
               className={cn(
                 "flex-1 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-lg",
-                sidebarTab === 'chat' ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                sidebarTab === 'chat' ? "bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-400"
               )}
             >
               Class Chat
@@ -644,7 +644,7 @@ export default function LiveClass({ searchQuery }) {
               onClick={() => setSidebarTab('sessions')}
               className={cn(
                 "flex-1 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-lg",
-                sidebarTab === 'sessions' ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                sidebarTab === 'sessions' ? "bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-400"
               )}
             >
               Schedule
@@ -652,7 +652,7 @@ export default function LiveClass({ searchQuery }) {
           </div>
           
           {sidebarTab === 'chat' ? (
-            <div className="flex-1 flex flex-col bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800/50 rounded-[32px] overflow-hidden h-[450px]">
+            <div className="flex-1 flex flex-col bg-slate-950/50 bg-slate-900/40 border border-slate-800/50 rounded-[32px] overflow-hidden h-[450px]">
               {/* Chat Message History */}
               <div className="flex-1 p-6 overflow-y-auto space-y-4 max-h-[380px] no-scrollbar">
                 {messages.length === 0 ? (
@@ -667,7 +667,7 @@ export default function LiveClass({ searchQuery }) {
                         <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 mb-1">{msg.sender}</span>
                         <div className={cn(
                           "px-4 py-2.5 rounded-2xl text-xs max-w-[85%] break-words leading-relaxed shadow-sm",
-                          isMe ? "bg-indigo-600 text-white rounded-tr-none" : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-none border border-slate-100 dark:border-slate-800/50"
+                          isMe ? "bg-indigo-600 text-white rounded-tr-none" : "bg-slate-800 text-slate-100 rounded-tl-none border border-slate-800/50"
                         )}>
                           {msg.content}
                         </div>
@@ -680,13 +680,13 @@ export default function LiveClass({ searchQuery }) {
               </div>
               
               {/* Message Input Form */}
-              <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 flex gap-2">
+              <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-800 bg-slate-950 flex gap-2">
                 <input 
                   type="text" 
                   placeholder={`Send message to ${activeSession?.module || 'class'}...`}
                   value={typedMessage}
                   onChange={(e) => setTypedMessage(e.target.value)}
-                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
+                  className="flex-1 px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                 />
                 <button 
                   type="submit" 
@@ -702,14 +702,14 @@ export default function LiveClass({ searchQuery }) {
                 <div 
                   key={session.id} 
                   onClick={() => setActiveSession(session)}
-                  className="glass-card hover-scale group cursor-pointer border border-slate-200/50 dark:border-slate-800/50"
+                  className="glass-card hover-scale group cursor-pointer border border-slate-800/50"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className={cn(
                       "px-2 py-1 rounded text-[10px] font-bold uppercase",
                       session.status === 'Live' ? "bg-red-100 text-red-650" :
                       session.status === 'Upcoming' ? "bg-indigo-100 text-indigo-600" :
-                      "bg-slate-100 text-slate-600"
+                      "bg-slate-900 text-slate-400"
                     )}>
                       {session.status}
                     </div>
@@ -734,9 +734,9 @@ export default function LiveClass({ searchQuery }) {
                 </div>
               ))}
 
-              <div className="glass-card bg-indigo-50 border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-800/50">
-                <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-200 mb-2">Need Help?</h4>
-                <p className="text-xs text-indigo-750 dark:text-indigo-400 mb-4">Contact your module tutor if you're having trouble joining the live session.</p>
+              <div className="glass-card bg-indigo-50 border-indigo-100 bg-indigo-900/20 border-indigo-800/50">
+                <h4 className="text-sm font-bold text-indigo-900 text-indigo-200 mb-2">Need Help?</h4>
+                <p className="text-xs text-indigo-750 text-indigo-400 mb-4">Contact your module tutor if you're having trouble joining the live session.</p>
                 <button 
                   onClick={() => alert("Contacting tutor support...")}
                   className="w-full py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-750 transition-all cursor-pointer"
