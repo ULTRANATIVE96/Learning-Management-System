@@ -91,15 +91,15 @@ export default function Sidebar({ activePage, setActivePage, isCollapsed, setIsC
               className={cn(
                 "sidebar-item w-full flex items-center gap-3 group relative py-3 px-4 rounded-xl transition-all",
                 isActive 
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 font-semibold" 
-                  : "hover:bg-slate-800/40 hover:text-slate-200 text-slate-400",
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 font-bold" 
+                  : "hover:bg-slate-800/40 hover:text-slate-200 text-[#718096]",
                 isCollapsed && !isMobile && "justify-center px-0"
               )}
               title={isCollapsed && !isMobile ? item.label : ""}
             >
               <item.icon className={cn(
                 "w-5 h-5 flex-shrink-0 transition-colors",
-                isActive ? "text-white" : "text-slate-500 group-hover:text-indigo-400"
+                isActive ? "text-white" : "text-[#718096] group-hover:text-indigo-400"
               )} />
               {(!isCollapsed || isMobile) && (
                 <span className="text-sm transition-opacity duration-300">
@@ -108,7 +108,7 @@ export default function Sidebar({ activePage, setActivePage, isCollapsed, setIsC
               )}
               
               {isActive && (
-                <div className="absolute left-0 w-1 h-6 bg-white rounded-r-full lg:hidden" />
+                <div className="absolute left-0 w-1 h-6 bg-slate-900 rounded-r-full lg:hidden" />
               )}
               
               {(!isCollapsed || isMobile) && item.active && (

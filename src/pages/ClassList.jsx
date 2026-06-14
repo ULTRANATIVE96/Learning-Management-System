@@ -50,8 +50,8 @@ export default function ClassList() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Class List</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Mathematics 101 • Section A • {students.length} Students</p>
+          <h1 className="text-3xl font-bold text-white">Class List</h1>
+          <p className="text-slate-400 mt-1">Mathematics 101 • Section A • {students.length} Students</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative group">
@@ -61,7 +61,7 @@ export default function ClassList() {
               placeholder="Search classmates..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full md:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="pl-10 pr-4 py-2 w-full md:w-64 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
           <button 
@@ -83,41 +83,41 @@ export default function ClassList() {
             <div key={student.id} className="glass-card hover-scale group">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 ring-2 ring-slate-100 dark:ring-slate-800 group-hover:ring-indigo-500/30 transition-all">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-800 ring-2 ring-slate-100 ring-slate-800 group-hover:ring-indigo-500/30 transition-all">
                     <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-slate-950 rounded-full" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-slate-950 rounded-full" />
                 </div>
                 
                 <div className="flex-1 overflow-hidden">
-                  <h3 className="font-bold text-slate-800 dark:text-white truncate group-hover:text-indigo-600 transition-colors">{student.name}</h3>
+                  <h3 className="font-bold text-white truncate group-hover:text-indigo-600 transition-colors">{student.name}</h3>
                   <p className="text-xs text-slate-500 truncate">{student.email}</p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className={cn(
                       "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                      student.role === 'Class Rep' ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      student.role === 'Class Rep' ? "bg-indigo-100 text-indigo-700 bg-indigo-500/20 text-indigo-400" : "bg-slate-900 text-slate-400 bg-slate-800 text-slate-400"
                     )}>
                       {student.role}
                     </span>
                   </div>
                 </div>
                 
-                <button className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+                <button className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all">
                   <MoreVertical className="w-4 h-4" />
                 </button>
               </div>
               
-              <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-3">
+              <div className="mt-6 pt-6 border-t border-slate-800 grid grid-cols-2 gap-3">
                 <button 
                   onClick={() => handleCommunicate(student.name, 'email')}
-                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-900 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 transition-all"
+                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-900 text-xs font-bold hover:bg-indigo-50 hover:bg-indigo-900/30 hover:text-indigo-600 transition-all"
                 >
                   <Mail className="w-3.5 h-3.5" />
                   Email
                 </button>
                 <button 
                   onClick={() => handleCommunicate(student.name, 'chat')}
-                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-900 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 transition-all"
+                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-900 text-xs font-bold hover:bg-indigo-50 hover:bg-indigo-900/30 hover:text-indigo-600 transition-all"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   Message
@@ -128,15 +128,15 @@ export default function ClassList() {
         </div>
       )}
 
-      <div className="glass-card flex items-center justify-center py-12 border-dashed border-2 border-slate-200 dark:border-slate-800">
+      <div className="glass-card flex items-center justify-center py-12 border-dashed border-2 border-slate-800">
         <div className="text-center">
-          <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <GraduationCap className="w-8 h-8 text-slate-300" />
           </div>
           <h4 className="text-lg font-bold text-slate-400">View more students...</h4>
           <button 
             onClick={() => alert("Load all students logic triggered.")}
-            className="mt-4 text-indigo-600 font-bold hover:underline"
+            className="mt-4 text-white font-bold hover:underline"
           >
             Load all 45 students
           </button>

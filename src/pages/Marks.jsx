@@ -91,17 +91,17 @@ export default function Marks() {
     <div className="space-y-8 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Academic Performance
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
+          <p className="text-slate-400 mt-2 text-lg">
             Track your grades and credit progress in real-time.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button 
             onClick={handleDownloadTranscript}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-50 transition-all group"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold shadow-sm hover:bg-slate-950 transition-all group"
           >
             <Download className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
             Download Transcript
@@ -117,13 +117,13 @@ export default function Marks() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-card border border-slate-200/50 dark:border-slate-800/50">
+        <div className="lg:col-span-2 glass-card border border-slate-800/50">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Module Grade Distribution</h3>
+              <h3 className="text-xl font-bold text-white">Module Grade Distribution</h3>
               <p className="text-sm text-slate-500 mt-1">Current weighted averages</p>
             </div>
-            <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+            <div className="p-2 bg-slate-800 rounded-lg">
               <BarChart2 className="w-5 h-5 text-slate-400" />
             </div>
           </div>
@@ -159,45 +159,45 @@ export default function Marks() {
         </div>
 
         <div className="space-y-6">
-          <div className="glass-card bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100/50 dark:border-indigo-500/20 group hover:bg-indigo-100/50 transition-colors">
+          <div className="glass-card group hover-scale transition-all">
             <div className="flex items-center gap-5">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
                 <CheckCircle2 className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Completed</p>
-                <h4 className="text-3xl font-extrabold text-indigo-900 dark:text-indigo-100 mt-1">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Completed</p>
+                <h4 className="text-3xl font-extrabold text-white mt-1">
                   {distinctionCount} distinctions
                 </h4>
-                <p className="text-[10px] text-indigo-400 mt-1 font-bold">Excellent Standing</p>
+                <p className="text-[10px] text-indigo-500 text-indigo-400 mt-1 font-bold">Excellent Standing</p>
               </div>
             </div>
           </div>
           
-          <div className="glass-card bg-indigo-50/30 dark:bg-slate-900/50 border-slate-200/50 dark:border-slate-800/50 group hover:border-indigo-500/30 transition-colors">
+          <div className="glass-card group hover-scale transition-all">
             <div className="flex items-center gap-5">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
                 <Award className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Current GPA</p>
-                <h4 className="text-3xl font-extrabold text-indigo-900 dark:text-indigo-100 mt-1">3.84</h4>
-                <p className="text-[10px] text-indigo-400 mt-1 font-bold">Top 5% of Class</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Current GPA</p>
+                <h4 className="text-3xl font-extrabold text-white mt-1">3.84</h4>
+                <p className="text-[10px] text-indigo-500 text-indigo-400 mt-1 font-bold">Top 5% of Class</p>
               </div>
             </div>
           </div>
 
-          <div className="glass-card bg-rose-50 dark:bg-rose-500/10 border-rose-100/50 dark:border-rose-500/20 group hover:bg-rose-100/50 transition-colors">
+          <div className="glass-card group hover-scale transition-all">
             <div className="flex items-center gap-5">
-              <div className="w-14 h-14 rounded-2xl bg-rose-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 bg-rose-500/20 flex items-center justify-center text-rose-600 text-rose-400 group-hover:scale-110 transition-transform">
                 <AlertCircle className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest">At Risk</p>
-                <h4 className="text-3xl font-extrabold text-rose-900 dark:text-rose-100 mt-1">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">At Risk</p>
+                <h4 className="text-3xl font-extrabold text-white mt-1">
                   {failCount > 0 ? `${failCount} Module` : '0 Modules'}
                 </h4>
-                <p className="text-[10px] text-rose-400 mt-1 font-bold">
+                <p className="text-[10px] text-rose-500 text-rose-400 mt-1 font-bold">
                   {failCount > 0 ? 'Review performance warning' : 'Safe zone'}
                 </p>
               </div>
@@ -206,16 +206,16 @@ export default function Marks() {
         </div>
       </div>
 
-      <div className="glass-card overflow-hidden p-0 border border-slate-200/50 dark:border-slate-800/50 shadow-2xl shadow-slate-200/20">
-        <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white">Assessment History</h3>
+      <div className="glass-card overflow-hidden p-0 border border-slate-800/50 shadow-2xl shadow-slate-200/20">
+        <div className="px-8 py-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h3 className="text-xl font-bold text-white">Assessment History</h3>
           <div className="flex items-center gap-3">
-            <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
-              <button className="px-4 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-800 shadow-sm text-indigo-600">All</button>
-              <button className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-600">Assignments</button>
-              <button className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-600">Exams</button>
+            <div className="flex bg-slate-900 p-1 rounded-xl">
+              <button className="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-800 shadow-sm text-indigo-600">All</button>
+              <button className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-400">Assignments</button>
+              <button className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-400">Exams</button>
             </div>
-            <button className="p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-indigo-600 transition-colors">
+            <button className="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-indigo-600 transition-colors">
               <Filter className="w-4 h-4" />
             </button>
           </div>
@@ -223,7 +223,7 @@ export default function Marks() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 text-[10px] font-extrabold uppercase tracking-[0.15em] border-b border-slate-100 dark:border-slate-800">
+              <tr className="bg-slate-950/50 bg-slate-900/50 text-slate-400 text-[10px] font-extrabold uppercase tracking-[0.15em] border-b border-slate-800">
                 <th className="px-8 py-5">Assessment</th>
                 <th className="px-8 py-5">Module</th>
                 <th className="px-8 py-5">Date</th>
@@ -233,23 +233,23 @@ export default function Marks() {
                 <th className="px-8 py-5">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-800">
               {assessments.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-all duration-300 group cursor-pointer">
+                <tr key={item.id} className="hover:bg-slate-900/30 transition-all duration-300 group cursor-pointer">
                   <td className="px-8 py-6">
-                    <p className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 transition-colors">{item.type}</p>
+                    <p className="font-bold text-slate-100 group-hover:text-indigo-600 transition-colors">{item.type}</p>
                     <p className="text-[10px] text-slate-400 mt-1 font-medium">ID: #ASM-0{item.id}</p>
                   </td>
                   <td className="px-8 py-6 text-sm font-semibold text-slate-500">{item.module}</td>
                   <td className="px-8 py-6 text-sm text-slate-500">{item.date}</td>
                   <td className="px-8 py-6">
-                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.weight}</span>
+                    <span className="px-3 py-1 bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.weight}</span>
                   </td>
                   <td className="px-8 py-6 text-center">
                     {item.mark !== null ? (
                       <span className={cn(
                         "text-lg font-black tracking-tight",
-                        item.mark >= 75 ? "text-indigo-600" : item.mark >= 50 ? "text-slate-700 dark:text-slate-200" : "text-rose-500"
+                        item.mark >= 75 ? "text-[#22c55e]" : item.mark >= 50 ? "text-slate-200" : "text-rose-500"
                       )}>
                         {item.mark}%
                       </span>
@@ -258,16 +258,16 @@ export default function Marks() {
                     )}
                   </td>
                   <td className="px-8 py-6">
-                    {item.trend === 'up' && <ArrowUpRight className="w-5 h-5 text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 p-1 rounded" />}
-                    {item.trend === 'down' && <ArrowDownRight className="w-5 h-5 text-rose-500 bg-rose-50 dark:bg-rose-500/10 p-1 rounded" />}
+                    {item.trend === 'up' && <ArrowUpRight className="w-5 h-5 text-emerald-500 bg-emerald-50 bg-emerald-500/10 p-1 rounded" />}
+                    {item.trend === 'down' && <ArrowDownRight className="w-5 h-5 text-rose-500 bg-rose-50 bg-rose-500/10 p-1 rounded" />}
                     {item.trend === 'none' && <Clock className="w-5 h-5 text-slate-300" />}
                   </td>
                   <td className="px-8 py-6">
                     <span className={cn(
                       "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] shadow-sm",
-                      item.status === 'Graded' ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" :
-                      item.status === 'Attention' ? "bg-rose-50 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400" :
-                      "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      item.status === 'Graded' ? "bg-emerald-50 text-emerald-700 bg-emerald-500/20 text-emerald-400" :
+                      item.status === 'Attention' ? "bg-rose-50 text-rose-700 bg-rose-500/20 text-rose-400" :
+                      "bg-slate-900 text-slate-400 bg-slate-800 text-slate-400"
                     )}>
                       {item.status}
                     </span>
@@ -277,7 +277,7 @@ export default function Marks() {
             </tbody>
           </table>
         </div>
-        <div className="px-8 py-4 bg-slate-50/50 dark:bg-slate-900/50 text-center">
+        <div className="px-8 py-4 bg-slate-950/50 bg-slate-900/50 text-center">
           <button className="text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-widest">Load Previous Semester Records</button>
         </div>
       </div>

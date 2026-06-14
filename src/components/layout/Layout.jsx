@@ -3,12 +3,12 @@ import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { cn } from '../../utils/cn';
 
-export default function Layout({ children, activePage, setActivePage, darkMode, setDarkMode, user, onLogout, searchQuery, setSearchQuery }) {
+export default function Layout({ children, activePage, setActivePage, user, onLogout, searchQuery, setSearchQuery }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className={cn("min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300", darkMode && "dark")}>
+    <div className="min-h-screen bg-slate-950 transition-colors duration-300">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar 
@@ -27,8 +27,6 @@ export default function Layout({ children, activePage, setActivePage, darkMode, 
       )}>
         <Navbar 
           toggleMobileMenu={() => setIsMobileMenuOpen(true)} 
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
           setActivePage={setActivePage}
           user={user}
           searchQuery={searchQuery}

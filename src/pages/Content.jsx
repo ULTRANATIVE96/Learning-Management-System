@@ -119,8 +119,8 @@ export default function Content() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Module Content</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Mathematics 101 • Section A</p>
+          <h1 className="text-3xl font-bold text-white">Module Content</h1>
+          <p className="text-slate-400 mt-1">Mathematics 101 • Section A</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -131,12 +131,12 @@ export default function Content() {
               placeholder="Search files..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full md:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="pl-10 pr-4 py-2 w-full md:w-64 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
           <button 
             onClick={triggerUpload}
-            className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold text-sm"
+            className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-indigo-50 hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold text-sm"
           >
             <Upload className="w-4 h-4" />
             <span className="hidden sm:inline">Upload Content</span>
@@ -145,7 +145,7 @@ export default function Content() {
       </div>
 
       {uploading && (
-        <div className="p-4 bg-indigo-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 rounded-2xl border border-indigo-200 dark:border-slate-800 flex items-center gap-3 animate-pulse">
+        <div className="p-4 bg-indigo-50 bg-slate-900 text-indigo-400 rounded-2xl border border-indigo-200 border-slate-800 flex items-center gap-3 animate-pulse">
           <Upload className="w-5 h-5 animate-bounce" />
           <span className="text-sm font-bold">Uploading new resource to Spring Boot...</span>
         </div>
@@ -164,12 +164,12 @@ export default function Content() {
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                   isActive 
                     ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" 
-                    : "text-slate-500 hover:bg-white dark:hover:bg-slate-900 hover:text-indigo-600"
+                    : "text-slate-500 hover:bg-slate-900 hover:text-indigo-600"
                 )}
               >
                 <Folder className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400 group-hover:text-indigo-500")} />
                 <span className="flex-1 text-left text-sm font-medium">{folder.name}</span>
-                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", isActive ? "bg-white/20" : "bg-slate-100 dark:bg-slate-800")}>
+                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", isActive ? "bg-slate-900/20" : "bg-slate-800")}>
                   {folder.count}
                 </span>
               </button>
@@ -179,7 +179,7 @@ export default function Content() {
 
         {/* Content Viewer / File List */}
         <div className="lg:col-span-3 glass-card flex flex-col p-0">
-          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50 bg-slate-900/50">
             <div className="flex items-center gap-2 text-sm">
               <span className="text-slate-400">Content</span>
               <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -187,7 +187,7 @@ export default function Content() {
             </div>
             <button 
               onClick={triggerUpload}
-              className="text-indigo-600 text-sm font-bold hover:underline flex items-center gap-1"
+              className="text-white text-sm font-bold hover:underline flex items-center gap-1"
             >
               <Plus className="w-3.5 h-3.5" /> Add Resource
             </button>
@@ -203,10 +203,10 @@ export default function Content() {
                 No files found in this folder. Click 'Add Resource' to upload.
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="divide-y divide-slate-800">
                 {filteredFiles.map((file) => (
-                  <div key={file.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors group">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+                  <div key={file.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-900/30 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 bg-indigo-500/10 flex items-center justify-center">
                       <FileText className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div className="flex-1">
@@ -222,12 +222,12 @@ export default function Content() {
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => handleDownload(file.id)}
-                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"
+                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:bg-indigo-900/30 rounded-lg transition-all"
                         title="Download file"
                       >
                         <Download className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                      <button className="p-2 text-slate-400 hover:text-slate-400 hover:text-slate-200 transition-colors bg-slate-800/50 rounded-lg">
                         <MoreVertical className="w-4 h-4" />
                       </button>
                     </div>
