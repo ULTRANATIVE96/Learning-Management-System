@@ -1,0 +1,41 @@
+# Render Blueprint Specification
+# This file automates the deployment of the Java Spring Boot backend and PostgreSQL database on Render.
+# For details, see: https://render.com/docs/blueprints
+
+databases:
+  - name: mytutor-db
+    databaseName: mytutor
+    user: mytutor_user
+    plan: free
+
+services:
+  - type: web
+    name: mytutor-backend
+    env: docker
+    plan: free
+    # Context should be relative to the root directory
+    dockerContext: backend
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PORT
+        value: 8080
+      
+      # Inject Database Connection Details automatically from the database defined above
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: mytutor-db
+          property: jdbcConnectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: mytutor-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: mytutor-db
+          property: password
+      - key: SPRING_DATASOURCE_DRIVER
+        value: org.postgresql.Driver
+
+      # Auto-create table schemas on startup
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update

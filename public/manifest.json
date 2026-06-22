@@ -1,0 +1,18 @@
+{
+  "short_name": "myTutor",
+  "name": "myTutor - Divine University Portal",
+  "description": "Progressive learning platform and WebRTC live classroom for Divine University.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

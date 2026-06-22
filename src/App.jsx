@@ -1,0 +1,206 @@
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import Layout from './components/layout/Layout';
+import Login from './pages/Login';
+
+// Lazy load Student Pages
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Modules = lazy(() => import('./pages/Modules'));
+const Marks = lazy(() => import('./pages/Marks'));
+const Content = lazy(() => import('./pages/Content'));
+const ClassList = lazy(() => import('./pages/ClassList'));
+const LiveClass = lazy(() => import('./pages/LiveClass'));
+const Assignments = lazy(() => import('./pages/Assignments'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Activities = lazy(() => import('./pages/Activities'));
+
+// Lazy load Lecturer Pages
+const LecturerDashboard = lazy(() => import('./pages/LecturerDashboard'));
+const ManageMarks = lazy(() => import('./pages/ManageMarks'));
+const UploadResources = lazy(() => import('./pages/UploadResources'));
+const HostLiveClass = lazy(() => import('./pages/HostLiveClass'));
+const ManageAnnouncements = lazy(() => import('./pages/ManageAnnouncements'));
+const LecturerActivities = lazy(() => import('./pages/LecturerActivities'));
+const ManageGroupsSubjects = lazy(() => import('./pages/ManageGroupsSubjects'));
+
+function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('mytutor_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  const [activePage, setActivePage] = useState(() => {
+    const saved = localStorage.getItem('mytutor_user');
+    if (saved) {
+      const u = JSON.parse(saved);
+      return u.role === 'LECTURER' ? 'lecturer_dashboard' : 'dashboard';
+    }
+    return 'dashboard';
+  });
+  
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Auto-route on direct URL query parameter (e.g. ?page=live)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = params.get('page');
+    if (pageParam) {
+      setActivePage(pageParam);
+    }
+  }, []);
+
+  // Clear search on page navigation
+  useEffect(() => {
+    setSearchQuery('');
+  }, [activePage]);
+
+  // Keep local storage in sync
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('mytutor_user', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('mytutor_user');
+    }
+  }, [currentUser]);
+
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    setActivePage(user.role === 'LECTURER' ? 'lecturer_dashboard' : 'dashboard');
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setActivePage('dashboard');
+  };
+
+  const renderPage = () => {
+    switch (activePage) {
+      // Student Pages
+      case 'dashboard':
+        return <Dashboard searchQuery={searchQuery} setActivePage={setActivePage} />;
+      case 'modules':
+        return <Modules searchQuery={searchQuery} />;
+      case 'marks':
+        return <Marks user={currentUser} searchQuery={searchQuery} />;
+      case 'content':
+        return <Content searchQuery={searchQuery} />;
+      case 'classlist':
+        return <ClassList user={currentUser} searchQuery={searchQuery} />;
+      case 'live':
+        return <LiveClass searchQuery={searchQuery} />;
+      case 'assignments':
+        return <Assignments searchQuery={searchQuery} />;
+      case 'activities':
+        return <Activities searchQuery={searchQuery} />;
+      case 'profile':
+        return <Profile user={currentUser} />;
+      case 'notifications':
+        return <Notifications searchQuery={searchQuery} setActivePage={setActivePage} />;
+ 
+      // Lecturer Pages
+      case 'lecturer_dashboard':
+        return <LecturerDashboard user={currentUser} setActivePage={setActivePage} searchQuery={searchQuery} />;
+      case 'manage_marks':
+        return <ManageMarks user={currentUser} searchQuery={searchQuery} />;
+      case 'upload_resources':
+        return <UploadResources searchQuery={searchQuery} />;
+      case 'host_live':
+        return <HostLiveClass user={currentUser} searchQuery={searchQuery} />;
+      case 'manage_announcements':
+        return <ManageAnnouncements user={currentUser} searchQuery={searchQuery} />;
+      case 'manage_activities':
+        return <LecturerActivities user={currentUser} searchQuery={searchQuery} />;
+      case 'manage_groups_subjects':
+        return <ManageGroupsSubjects user={currentUser} searchQuery={searchQuery} />;
+ 
+      default:
+        return currentUser?.role === 'LECTURER' ? (
+          <LecturerDashboard user={currentUser} setActivePage={setActivePage} searchQuery={searchQuery} />
+        ) : (
+          <Dashboard searchQuery={searchQuery} />
+        );
+    }
+  };
+
+  const handleSwitchRole = (role) => {
+    if (role === 'STUDENT') {
+      const studentUser = {
+        id: 11101,
+        username: "11101",
+        name: "Jonathan Doe",
+        role: "STUDENT",
+        email: "11101@divine.edu",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+      };
+      setCurrentUser(studentUser);
+      setActivePage('dashboard');
+    } else {
+      const lecturerUser = {
+        id: 100,
+        username: "TeachAndie",
+        name: "Dr. Andrea Vine",
+        role: "LECTURER",
+        email: "andrea.vine@divine.edu",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Andie"
+      };
+      setCurrentUser(lecturerUser);
+      setActivePage('lecturer_dashboard');
+    }
+  };
+
+  // If no user is logged in, show the login portal screen
+  if (!currentUser) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  const isLecturer = currentUser.role === 'LECTURER';
+
+  return (
+    <Layout 
+      activePage={activePage} 
+      setActivePage={setActivePage}
+      user={currentUser}
+      onLogout={handleLogout}
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      onSwitchRole={handleSwitchRole}
+    >
+      <div className="animate-in fade-in duration-500">
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          {renderPage()}
+        </Suspense>
+      </div>
+      
+      {/* Global Floating Action Button */}
+      <button className="fixed bottom-8 right-8 w-14 h-14 bg-indigo-600 text-white rounded-2xl shadow-2xl shadow-indigo-600/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+        <div className="absolute bottom-16 right-0 scale-0 group-hover:scale-100 transition-all origin-bottom-right space-y-3 pb-4">
+          <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'manage_announcements' : 'dashboard')}>
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+              {isLecturer ? 'Post Announcement' : 'Ask AI'}
+            </span>
+            <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg">✨</div>
+          </div>
+          <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'upload_resources' : 'assignments')}>
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+              {isLecturer ? 'Upload Note' : 'New Assignment'}
+            </span>
+            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">📝</div>
+          </div>
+          <div className="flex items-center gap-3 justify-end" onClick={() => setActivePage(isLecturer ? 'host_live' : 'live')}>
+            <span className="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+              {isLecturer ? 'Host Class' : 'Join Class'}
+            </span>
+            <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-lg">🎥</div>
+          </div>
+        </div>
+        <span className="text-2xl font-bold">+</span>
+      </button>
+    </Layout>
+  );
+}
+
+export default App;
