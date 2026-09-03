@@ -21,4 +21,5 @@ public class User {
     private String role; // "STUDENT" or "LECTURER"
     private String email;
     private String avatar;
+    private String lecturerId; // Unique identifier for lecturers
 }

@@ -30,7 +30,6 @@ public class ModuleController {
 
         // Set default values if not provided
         if (module.getProgress() == null) module.setProgress(0);
-        if (module.getLecturer() == null) module.setLecturer("TBD Lecturer");
         if (module.getColor() == null) module.setColor("text-indigo-600");
         if (module.getBgColor() == null) module.setBgColor("bg-indigo-600");
         if (module.getIcon() == null) module.setIcon("📚");
@@ -53,7 +52,6 @@ public class ModuleController {
                 .map(module -> {
                     module.setName(updated.getName());
                     module.setCode(updated.getCode());
-                    module.setLecturer(updated.getLecturer());
                     module.setProgress(updated.getProgress());
                     module.setSyllabusModules(updated.getSyllabusModules());
                     return ResponseEntity.ok(moduleRepository.save(module));

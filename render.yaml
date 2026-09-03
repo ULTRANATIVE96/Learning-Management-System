@@ -15,7 +15,7 @@ services:
     plan: free
     # Context should be relative to the root directory
     dockerContext: backend
-    dockerfilePath: Dockerfile
+    dockerfilePath: backend/Dockerfile
     envVars:
       - key: PORT
         value: 8080

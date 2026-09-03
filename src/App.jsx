@@ -13,6 +13,7 @@ const Assignments = lazy(() => import('./pages/Assignments'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Activities = lazy(() => import('./pages/Activities'));
+const StudentCourseBrowser = lazy(() => import('./pages/StudentCourseBrowser'));
 
 // Lazy load Lecturer Pages
 const LecturerDashboard = lazy(() => import('./pages/LecturerDashboard'));
@@ -22,6 +23,9 @@ const HostLiveClass = lazy(() => import('./pages/HostLiveClass'));
 const ManageAnnouncements = lazy(() => import('./pages/ManageAnnouncements'));
 const LecturerActivities = lazy(() => import('./pages/LecturerActivities'));
 const ManageGroupsSubjects = lazy(() => import('./pages/ManageGroupsSubjects'));
+const ManageCourses = lazy(() => import('./pages/ManageCourses'));
+const LecturerInvitations = lazy(() => import('./pages/LecturerInvitations'));
+const CourseApplications = lazy(() => import('./pages/CourseApplications'));
 
 function App() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -80,6 +84,8 @@ function App() {
         return <Dashboard searchQuery={searchQuery} setActivePage={setActivePage} />;
       case 'modules':
         return <Modules searchQuery={searchQuery} />;
+      case 'student_course_browser':
+        return <StudentCourseBrowser user={currentUser} searchQuery={searchQuery} />;
       case 'marks':
         return <Marks user={currentUser} searchQuery={searchQuery} />;
       case 'content':
@@ -100,6 +106,12 @@ function App() {
       // Lecturer Pages
       case 'lecturer_dashboard':
         return <LecturerDashboard user={currentUser} setActivePage={setActivePage} searchQuery={searchQuery} />;
+      case 'manage_courses':
+        return <ManageCourses user={currentUser} searchQuery={searchQuery} />;
+      case 'lecturer_invitations':
+        return <LecturerInvitations user={currentUser} searchQuery={searchQuery} />;
+      case 'course_applications':
+        return <CourseApplications user={currentUser} searchQuery={searchQuery} />;
       case 'manage_marks':
         return <ManageMarks user={currentUser} searchQuery={searchQuery} />;
       case 'upload_resources':

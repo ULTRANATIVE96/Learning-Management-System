@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ModuleRepository extends JpaRepository<Module, Long> {
     Optional<Module> findByCode(String code);
     boolean existsByCode(String code);
+    java.util.List<Module> findByCourseId(Long courseId);
 }

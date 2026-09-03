@@ -105,7 +105,10 @@ export default function Profile({ user }) {
             <h1 className="text-3xl font-black text-white tracking-tight">{profile?.name}</h1>
             <p className="text-slate-400 font-bold flex items-center gap-2 mt-1 uppercase tracking-widest text-[10px]">
               <Shield className="w-3.5 h-3.5 text-indigo-500" />
-              Verified Student Account • 2024001
+              {user?.role === 'LECTURER' 
+                ? `Verified Lecturer Account • ID: ${user.lecturerId || 'N/A'}`
+                : `Verified Student Account • ${profile?.username || '2024001'}`
+              }
             </p>
           </div>
         </div>

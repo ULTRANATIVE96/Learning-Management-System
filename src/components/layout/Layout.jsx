@@ -26,43 +26,6 @@ export default function Layout({ children, activePage, setActivePage, user, onLo
         "transition-all duration-300 min-h-screen flex flex-col",
         isSidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
       )}>
-        {/* Prototyping View Switcher Banner */}
-        <div className="bg-slate-900 border-b border-indigo-500/20 px-6 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-            </span>
-            <span className="font-extrabold text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              Rapid Prototyping Sandbox
-            </span>
-          </div>
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 shadow-inner">
-            <button 
-              onClick={() => onSwitchRole('STUDENT')}
-              className={cn(
-                "px-4 py-1.5 rounded-lg font-extrabold transition-all text-[11px] uppercase tracking-wider",
-                user?.role === 'STUDENT' 
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10" 
-                  : "text-slate-400 hover:text-slate-200"
-              )}
-            >
-              Student Portal View
-            </button>
-            <button 
-              onClick={() => onSwitchRole('LECTURER')}
-              className={cn(
-                "px-4 py-1.5 rounded-lg font-extrabold transition-all text-[11px] uppercase tracking-wider",
-                user?.role === 'LECTURER' 
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10" 
-                  : "text-slate-400 hover:text-slate-200"
-              )}
-            >
-              Lecturer Desk View
-            </button>
-          </div>
-        </div>
 
         <Navbar 
           toggleMobileMenu={() => setIsMobileMenuOpen(true)} 

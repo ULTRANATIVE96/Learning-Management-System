@@ -397,10 +397,51 @@ export const api = {
           name: user.name,
           role: user.role,
           email: user.email,
-          avatar: user.avatar
+          avatar: user.avatar,
+          lecturerId: user.lecturerId
         };
       }
       throw new Error("Invalid username or password");
+    }
+  },
+
+  register: async (registerData) => {
+    try {
+      return await safeFetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData)
+      });
+    } catch (err) {
+      // Mock fallback
+      const users = getMockData('mytutor_users') || [];
+      if (users.find(u => u.username === registerData.username)) {
+        throw new Error("Username already exists");
+      }
+      const newUser = {
+        username: registerData.username,
+        password: registerData.password,
+        name: registerData.name,
+        role: registerData.role,
+        email: registerData.email,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${registerData.username}`,
+      };
+      
+      if (registerData.role === 'LECTURER') {
+        const parts = registerData.name ? registerData.name.trim().split(/\s+/) : ['U'];
+        const initials = parts.map(p => p[0]).join('').toLowerCase();
+        const randNum = Math.floor(Math.random() * 900) + 100;
+        newUser.lecturerId = `${initials}-${randNum}`;
+      }
+      
+      users.push(newUser);
+      saveMockData('mytutor_users', users);
+      
+      return {
+        message: "User registered successfully",
+        id: Date.now(),
+        lecturerId: newUser.lecturerId
+      };
     }
   },
 
@@ -457,6 +498,68 @@ export const api = {
       saveMockData('mytutor_profile', profile);
       return profile;
     }
+  },
+
+  // --- Course Management ---
+  createCourse: async (courseData) => {
+    return await safeFetch(`${API_BASE_URL}/courses`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(courseData)
+    });
+  },
+  getOwnedCourses: async (ownerUsername) => {
+    return await safeFetch(`${API_BASE_URL}/courses/owner/${ownerUsername}`);
+  },
+  getAllCourses: async () => {
+    return await safeFetch(`${API_BASE_URL}/courses`);
+  },
+  
+  createModule: async (courseId, moduleData) => {
+    return await safeFetch(`${API_BASE_URL}/courses/${courseId}/modules`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(moduleData)
+    });
+  },
+  
+  assignLecturerToModule: async (assignmentData) => {
+    return await safeFetch(`${API_BASE_URL}/assignments/lecturer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assignmentData)
+    });
+  },
+  getLecturerInvitations: async (lecturerUsername) => {
+    return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${lecturerUsername}`);
+  },
+  updateInvitationStatus: async (assignmentId, status) => {
+    return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${assignmentId}/status?status=${status}`, {
+      method: 'PUT'
+    });
+  },
+
+  applyForCourse: async (applicationData) => {
+    return await safeFetch(`${API_BASE_URL}/applications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(applicationData)
+    });
+  },
+  getCourseApplications: async (courseId) => {
+    return await safeFetch(`${API_BASE_URL}/applications/course/${courseId}`);
+  },
+  updateApplicationStatus: async (applicationId, status, feedback) => {
+    const url = `${API_BASE_URL}/applications/${applicationId}/status?status=${status}${feedback ? `&feedback=${encodeURIComponent(feedback)}` : ''}`;
+    return await safeFetch(url, {
+      method: 'PUT'
+    });
+  },
+  getStudentApplications: async (studentUsername) => {
+    return await safeFetch(`${API_BASE_URL}/applications/student/${studentUsername}`);
+  },
+  getLecturerModules: async (lecturerUsername) => {
+    return await safeFetch(`${API_BASE_URL}/courses/lecturer-modules/${lecturerUsername}`);
   },
 
   // 2. Modules

@@ -17,7 +17,11 @@ public class Module {
 
     private String name;
     private String code; // e.g. CSC201
-    private String lecturer;
+    
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+
     private Integer progress; // 0-100
     private String color; // Lucide / CSS color utility class
     private String bgColor; // Background color utility class

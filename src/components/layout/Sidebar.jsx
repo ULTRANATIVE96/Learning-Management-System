@@ -24,6 +24,7 @@ import { cn } from '../../utils/cn';
 const studentMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
   { icon: BookOpen, label: 'My Modules', id: 'modules' },
+  { icon: Layers, label: 'Course Browser', id: 'student_course_browser' },
   { icon: GraduationCap, label: 'Marks', id: 'marks' },
   { icon: FileText, label: 'Assignments', id: 'assignments' },
   { icon: ClipboardList, label: 'Online Activities', id: 'activities' },
@@ -36,6 +37,9 @@ const studentMenuItems = [
 
 const lecturerMenuItems = [
   { icon: LayoutDashboard, label: 'Lecturer Dashboard', id: 'lecturer_dashboard' },
+  { icon: Layers, label: 'Manage Courses', id: 'manage_courses' },
+  { icon: BookOpen, label: 'Invitations', id: 'lecturer_invitations' },
+  { icon: UserCheck, label: 'Applications', id: 'course_applications' },
   { icon: FileCheck, label: 'Manage Marks', id: 'manage_marks' },
   { icon: ClipboardList, label: 'Manage Activities', id: 'manage_activities' },
   { icon: UserCheck, label: 'Groups & Subjects', id: 'manage_groups_subjects' },
