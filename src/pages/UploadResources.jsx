@@ -8,7 +8,7 @@ export default function UploadResources() {
   const [selectedFolder, setSelectedFolder] = useState('');
   const [selectedModule, setSelectedModule] = useState('');
   const [filesList, setFilesList] = useState([]);
-  
+
   // Upload state
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -41,7 +41,7 @@ export default function UploadResources() {
   // Fetch files when folder changes
   useEffect(() => {
     if (!selectedFolder) return;
-    
+
     async function loadFolderFiles() {
       setLoadingFiles(true);
       try {
@@ -82,13 +82,13 @@ export default function UploadResources() {
     try {
       // Append module details prefix if needed or upload straight away
       const uploadedFile = await api.uploadContentFile(selectedFolder, file);
-      
+
       // Update files list locally
       setFilesList([...filesList, uploadedFile]);
-      
+
       // Update folder count
       setFolders(folders.map(f => f.name === selectedFolder ? { ...f, count: f.count + 1 } : f));
-      
+
       setMessage(`Successfully uploaded '${file.name}' to ${selectedFolder}!`);
       setFile(null);
       // Reset file input element
@@ -253,14 +253,14 @@ export default function UploadResources() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <a
-                        href={api.getFileDownloadUrl(fileItem.id)}
+                      <button
+                        type="button"
+                        onClick={() => api.downloadFile(fileItem.id)}
                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-800 rounded-xl transition-all"
                         title="Download File"
-                        download
                       >
                         <FileDown className="w-4 h-4" />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 ))}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Video, 
-  Calendar, 
-  Clock, 
-  Users, 
-  Play, 
+import {
+  Video,
+  Calendar,
+  Clock,
+  Users,
+  Play,
   ExternalLink,
   MessageSquare,
   Mic,
@@ -15,7 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { api, getChatWebSocketUrl } from '../utils/api';
+import { api, openRoomSocket, subscribeLiveSessions, safeSegment } from '../utils/api';
 
 export default function LiveClass({ searchQuery }) {
   const [sessions, setSessions] = useState([]);
@@ -24,22 +24,22 @@ export default function LiveClass({ searchQuery }) {
   const [recordings, setRecordings] = useState([]);
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Search state
   const [localSearch, setLocalSearch] = useState('');
-  
+
   // Stream state
   const [hasJoinedStream, setHasJoinedStream] = useState(false);
-  
+
   // Video player state (for previous recordings)
   const [activeVideoUrl, setActiveVideoUrl] = useState(null);
   const [activeVideoTitle, setActiveVideoTitle] = useState('');
-  
+
   // Chat States
   const [sidebarTab, setSidebarTab] = useState('chat'); // 'chat' or 'sessions'
   const [messages, setMessages] = useState([]);
   const [typedMessage, setTypedMessage] = useState('');
-  
+
   const chatEndRef = useRef(null);
   const socketRef = useRef(null);
   const clientIdRef = useRef(Math.random().toString(36).substring(2, 9));
@@ -60,7 +60,7 @@ export default function LiveClass({ searchQuery }) {
         setProfile(profileData);
         setRecordings(recordingsData);
         setModules(modulesData);
-        
+
         // Check for direct URL parameter invitation (e.g. ?session=ID)
         const params = new URLSearchParams(window.location.search);
         const sessionParam = params.get('session');
@@ -75,7 +75,7 @@ export default function LiveClass({ searchQuery }) {
             }
           }
         }
-        
+
         if (!initialActive) {
           // Default to the first 'Live' session, or the first session in the list
           const live = sessionData.find(s => s.status === 'Live') || sessionData[0];
@@ -88,6 +88,23 @@ export default function LiveClass({ searchQuery }) {
       }
     }
     loadInitial();
+  }, []);
+
+  // Discover live sessions hosted by lecturers on other devices/tabs
+  useEffect(() => {
+    const unsubscribe = subscribeLiveSessions((moduleCode, session) => {
+      setSessions(prev => {
+        if (!session) {
+          return prev.filter(s => !(s.remote && safeSegment(s.module) === safeSegment(moduleCode)));
+        }
+        const withoutModule = prev.filter(s => !(s.remote && safeSegment(s.module) === safeSegment(session.module)));
+        if (withoutModule.some(s => s.id === session.id)) {
+          return withoutModule.map(s => (s.id === session.id ? { ...s, ...session } : s));
+        }
+        return [session, ...withoutModule];
+      });
+    });
+    return unsubscribe;
   }, []);
 
   // Sync with global navbar search query
@@ -118,10 +135,9 @@ export default function LiveClass({ searchQuery }) {
     }
     loadHistory();
 
-    // 2. Establish WebSocket connection
-    const wsUrl = getChatWebSocketUrl(activeSession.module);
-    console.log(`Connecting to WebSocket at: ${wsUrl}`);
-    const socket = new WebSocket(wsUrl);
+    // 2. Establish realtime room connection (chat + WebRTC signaling)
+    console.log(`Connecting to live room: ${activeSession.module}`);
+    const socket = openRoomSocket(activeSession.module);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -131,27 +147,27 @@ export default function LiveClass({ searchQuery }) {
     socket.onmessage = async (event) => {
       try {
         const newMessage = JSON.parse(event.data);
-        
+
         // Intercept SYSTEM_RTC signaling messages
         if (newMessage.sender === 'SYSTEM_RTC') {
           const signaling = JSON.parse(newMessage.content);
-          
+
           // Only process signaling targeted to this specific student
           if (signaling.to === clientIdRef.current) {
             if (signaling.rtcType === 'offer') {
               console.log("WebRTC: Received Offer from lecturer, setting remote desc");
               if (pcRef.current) pcRef.current.close();
-              
+
               const pc = new RTCPeerConnection({
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
               });
               pcRef.current = pc;
-              
+
               pc.ontrack = (e) => {
                 console.log("WebRTC: Received remote track", e.streams[0]);
                 setLiveStream(e.streams[0]);
               };
-              
+
               pc.onicecandidate = (e) => {
                 if (e.candidate) {
                   sendRtcMessage({
@@ -162,11 +178,11 @@ export default function LiveClass({ searchQuery }) {
                   });
                 }
               };
-              
+
               await pc.setRemoteDescription(new RTCSessionDescription(signaling.data));
               const answer = await pc.createAnswer();
               await pc.setLocalDescription(answer);
-              
+
               sendRtcMessage({
                 rtcType: 'answer',
                 from: clientIdRef.current,
@@ -259,7 +275,7 @@ export default function LiveClass({ searchQuery }) {
   useEffect(() => {
     if (hasJoinedStream && activeSession && activeSession.status === 'Live') {
       console.log("WebRTC: Student joined stream, sending request-stream join message");
-      
+
       const timer = setTimeout(() => {
         sendRtcMessage({
           rtcType: 'join',
@@ -267,7 +283,7 @@ export default function LiveClass({ searchQuery }) {
           to: 'lecturer'
         });
       }, 300);
-      
+
       return () => {
         clearTimeout(timer);
         if (pcRef.current) {
@@ -319,12 +335,12 @@ export default function LiveClass({ searchQuery }) {
   const activeModuleCode = activeSession?.module || '';
   const filteredRecordings = recordings.filter((rec) => {
     const q = localSearch.trim().toLowerCase();
-    
+
     // If no search filter is active, only show recordings for the currently active/selected module
     if (!q) {
       return rec.moduleCode === activeModuleCode;
     }
-    
+
     // Otherwise, search across all course recordings
     const titleMatch = rec.title ? rec.title.toLowerCase().includes(q) : false;
     const moduleMatch = rec.moduleCode ? rec.moduleCode.toLowerCase().includes(q) : false;
@@ -348,7 +364,7 @@ export default function LiveClass({ searchQuery }) {
           </h1>
           <p className="text-slate-400 mt-1">Join active broadcasts or view scheduled lectures.</p>
         </div>
-        <button 
+        <button
           onClick={() => alert("Simulating full calendar view loading...")}
           className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm font-medium hover:bg-slate-950 transition-colors flex items-center gap-2"
         >
@@ -415,13 +431,13 @@ export default function LiveClass({ searchQuery }) {
                   playsInline
                   className="w-full h-full object-contain"
                 />
-                
+
                 {/* Floatings stream indicators */}
                 <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-red-600 text-white text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg tracking-wider animate-pulse flex items-center gap-1.5 shadow-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-ping" />
                   <span>Live Stream Feed</span>
                 </div>
-                
+
                 <button
                   onClick={() => setHasJoinedStream(false)}
                   className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-rose-600 hover:bg-rose-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-colors shadow-lg flex items-center gap-1 cursor-pointer"
@@ -459,7 +475,7 @@ export default function LiveClass({ searchQuery }) {
                         Class Broadcast Active
                       </p>
                       <h3 className="text-white text-lg font-bold">Live Stream Ready</h3>
-                      <button 
+                      <button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
@@ -478,7 +494,7 @@ export default function LiveClass({ searchQuery }) {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Overlay Info */}
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                   <span className={cn(
@@ -491,20 +507,20 @@ export default function LiveClass({ searchQuery }) {
                     <Users className="w-3 h-3" /> {activeSession.studentCount} Students
                   </span>
                 </div>
-                
+
                 {/* Control Bar Mockup */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10">
                   <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Mic className="w-5 h-5" /></button>
                   <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Video className="w-5 h-5" /></button>
                   <button className="p-2 text-white hover:bg-slate-900/20 rounded-lg transition-colors"><Monitor className="w-5 h-5" /></button>
                   <div className="w-px h-6 bg-slate-900/20" />
-                  <button 
+                  <button
                     onClick={() => setSidebarTab('chat')}
                     className={cn("p-2 rounded-lg transition-colors", sidebarTab === 'chat' ? "text-indigo-400" : "text-white hover:bg-slate-900/20")}
                   >
                     <MessageSquare className="w-5 h-5" />
                   </button>
-                  <button 
+                  <button
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
@@ -535,7 +551,7 @@ export default function LiveClass({ searchQuery }) {
                   </p>
                 </div>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -558,7 +574,7 @@ export default function LiveClass({ searchQuery }) {
                     {localSearch ? "Showing search results across all modules" : `Showing recorded lectures for ${activeSession.module}`}
                   </p>
                 </div>
-                
+
                 {/* Search recordings input */}
                 <div className="relative shrink-0 w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
@@ -608,8 +624,8 @@ export default function LiveClass({ searchQuery }) {
                         </div>
 
                         {/* Download button */}
-                        <a 
-                          href={rec.videoUrl} 
+                        <a
+                          href={rec.videoUrl}
                           download={rec.title}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -631,7 +647,7 @@ export default function LiveClass({ searchQuery }) {
         {/* Sidebar Tabs (Chat & Schedule) */}
         <div className="flex flex-col space-y-6">
           <div className="flex border-b border-slate-800 p-1 bg-slate-900 rounded-xl">
-            <button 
+            <button
               onClick={() => setSidebarTab('chat')}
               className={cn(
                 "flex-1 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-lg",
@@ -640,7 +656,7 @@ export default function LiveClass({ searchQuery }) {
             >
               Class Chat
             </button>
-            <button 
+            <button
               onClick={() => setSidebarTab('sessions')}
               className={cn(
                 "flex-1 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-lg",
@@ -650,7 +666,7 @@ export default function LiveClass({ searchQuery }) {
               Schedule
             </button>
           </div>
-          
+
           {sidebarTab === 'chat' ? (
             <div className="flex-1 flex flex-col bg-slate-950/50 bg-slate-900/40 border border-slate-800/50 rounded-[32px] overflow-hidden h-[450px]">
               {/* Chat Message History */}
@@ -678,18 +694,18 @@ export default function LiveClass({ searchQuery }) {
                 )}
                 <div ref={chatEndRef} />
               </div>
-              
+
               {/* Message Input Form */}
               <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-800 bg-slate-950 flex gap-2">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder={`Send message to ${activeSession?.module || 'class'}...`}
                   value={typedMessage}
                   onChange={(e) => setTypedMessage(e.target.value)}
                   className="flex-1 px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
@@ -699,8 +715,8 @@ export default function LiveClass({ searchQuery }) {
           ) : (
             <div className="space-y-4 text-xs font-semibold">
               {sessions.filter(s => activeSession ? s.id !== activeSession.id : true).map((session) => (
-                <div 
-                  key={session.id} 
+                <div
+                  key={session.id}
                   onClick={() => setActiveSession(session)}
                   className="glass-card hover-scale group cursor-pointer border border-slate-800/50"
                 >
@@ -708,8 +724,8 @@ export default function LiveClass({ searchQuery }) {
                     <div className={cn(
                       "px-2 py-1 rounded text-[10px] font-bold uppercase",
                       session.status === 'Live' ? "bg-red-100 text-red-650" :
-                      session.status === 'Upcoming' ? "bg-indigo-100 text-indigo-600" :
-                      "bg-slate-900 text-slate-400"
+                        session.status === 'Upcoming' ? "bg-indigo-100 text-indigo-600" :
+                          "bg-slate-900 text-slate-400"
                     )}>
                       {session.status}
                     </div>
@@ -718,9 +734,9 @@ export default function LiveClass({ searchQuery }) {
                       {session.studentCount}
                     </div>
                   </div>
-                  
+
                   <h4 className="font-bold text-sm mb-2 group-hover:text-indigo-600 transition-colors">{session.title}</h4>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <Clock className="w-3 h-3" />
@@ -737,7 +753,7 @@ export default function LiveClass({ searchQuery }) {
               <div className="glass-card bg-indigo-50 border-indigo-100 bg-indigo-900/20 border-indigo-800/50">
                 <h4 className="text-sm font-bold text-indigo-900 text-indigo-200 mb-2">Need Help?</h4>
                 <p className="text-xs text-indigo-750 text-indigo-400 mb-4">Contact your module tutor if you're having trouble joining the live session.</p>
-                <button 
+                <button
                   onClick={() => alert("Contacting tutor support...")}
                   className="w-full py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-750 transition-all cursor-pointer"
                 >

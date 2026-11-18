@@ -40,7 +40,7 @@ export default function Assignments() {
   }, []);
 
   const handleDownload = (id) => {
-    window.open(api.getAssignmentBriefUrl(id), '_blank');
+    api.downloadAssignmentBrief(id);
   };
 
   const triggerUpload = (id) => {
@@ -195,7 +195,7 @@ export default function Assignments() {
       {uploading && (
         <div className="p-4 bg-indigo-50 bg-slate-900 text-indigo-400 rounded-2xl border border-indigo-200 border-slate-800 flex items-center gap-3 animate-pulse">
           <Upload className="w-5 h-5 animate-bounce" />
-          <span className="text-sm font-bold">Uploading file to Spring Boot backend...</span>
+          <span className="text-sm font-bold">Uploading file...</span>
         </div>
       )}
 

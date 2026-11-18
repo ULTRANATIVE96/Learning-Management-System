@@ -1,12 +1,23 @@
 // API Client for myTutor
-// Bridges the React frontend with the Java Spring Boot backend.
-// Implements resilient fallback to localStorage/mock data if the backend is unreachable.
+//
+// By default the app runs as a fully static, serverless site (e.g. on Vercel):
+//   - structured data is kept in the browser's localStorage
+//   - uploaded files / recorded videos are kept in the browser's IndexedDB
+//   - live class chat + WebRTC signaling go through a serverless realtime relay (see realtime.js)
+//
+// The optional Java Spring Boot backend is only used when VITE_USE_BACKEND=true AND
+// VITE_API_URL is set. Otherwise no network requests are made to any API server.
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+import { putBlob, getBlob, deleteBlob, resolveBlobUrl, saveBlobAs } from './localFiles';
+export { openRoomSocket, describeRealtime, announceLiveSession, subscribeLiveSessions, safeSegment } from './realtime';
+
+const USE_BACKEND = import.meta.env.VITE_USE_BACKEND === 'true' && !!import.meta.env.VITE_API_URL;
+const API_BASE_URL = USE_BACKEND ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '/api';
+
+export const isBackendEnabled = USE_BACKEND;
 
 export const getChatWebSocketUrl = (roomCode) => {
   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  // Fallback to localhost:8080 if environment variable not set
   const apiHost = import.meta.env.VITE_API_WS_URL || 'localhost:8080';
   return `${wsProtocol}//${apiHost}/chat?room=${roomCode}`;
 };
@@ -97,9 +108,9 @@ const MOCK_DB = {
   ],
   videoRecordings: [],
   users: [
-    { username: 'TeachAndie', password: 'TAndie@123', name: 'Dr. Andrea Vine', role: 'LECTURER', email: 'andrea.vine@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andie', groupList: ['Group A'] },
-    { username: 'TeachVine', password: 'TVine@123', name: 'Prof. Vincent Taylor', role: 'LECTURER', email: 'vincent.taylor@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vine', groupList: ['Group B'] },
-    { username: 'TeachMya', password: 'TZya@123', name: 'Dr. Mya Zya', role: 'LECTURER', email: 'mya.zya@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mya', groupList: ['Group A', 'Group B'] },
+    { username: 'TeachAndie', password: 'TAndie@123', name: 'Dr. Andrea Vine', role: 'LECTURER', email: 'andrea.vine@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andie', groupList: ['Group A'], lecturerId: 'dav-101' },
+    { username: 'TeachVine', password: 'TVine@123', name: 'Prof. Vincent Taylor', role: 'LECTURER', email: 'vincent.taylor@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vine', groupList: ['Group B'], lecturerId: 'pvt-102' },
+    { username: 'TeachMya', password: 'TZya@123', name: 'Dr. Mya Zya', role: 'LECTURER', email: 'mya.zya@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mya', groupList: ['Group A', 'Group B'], lecturerId: 'dmz-103' },
     { username: '11101', password: 'STVine@123', name: 'Jonathan Doe', role: 'STUDENT', email: '11101@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' },
     { username: '11201', password: 'STAndie@123', name: 'Sarah Connor', role: 'STUDENT', email: '11201@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah' },
     { username: '11301', password: 'STZya@123', name: 'Marcus Wright', role: 'STUDENT', email: '11301@divine.edu', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus' }
@@ -334,7 +345,7 @@ const initMockLocalStorage = () => {
     if (!localStorage.getItem('mytutor_activitySubmissions') || JSON.parse(localStorage.getItem('mytutor_activitySubmissions')).length === 0) {
       localStorage.setItem('mytutor_activitySubmissions', JSON.stringify(MOCK_DB.activitySubmissions));
     }
-    // Make sure users in localstorage have groupList if they are LECTURERs
+    // Make sure users in localstorage have groupList / lecturerId if they are LECTURERs
     const currentUsers = JSON.parse(localStorage.getItem('mytutor_users') || '[]');
     let updatedUsers = false;
     currentUsers.forEach(u => {
@@ -342,6 +353,11 @@ const initMockLocalStorage = () => {
         if (u.username === 'TeachAndie') u.groupList = ['Group A'];
         else if (u.username === 'TeachVine') u.groupList = ['Group B'];
         else u.groupList = ['Group A', 'Group B'];
+        updatedUsers = true;
+      }
+      if (u.role === 'LECTURER' && !u.lecturerId) {
+        const seed = MOCK_DB.users.find(s => s.username === u.username);
+        u.lecturerId = seed ? seed.lecturerId : `${u.username.toLowerCase()}-${Math.floor(Math.random() * 900) + 100}`;
         updatedUsers = true;
       }
     });
@@ -354,9 +370,16 @@ initMockLocalStorage();
 
 const getMockData = (key) => JSON.parse(localStorage.getItem(key));
 const saveMockData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+const getList = (key) => getMockData(key) || [];
 
-// Safe fetch wrapper that catches connection errors and uses fallbacks
+const LOCAL_MODE_ERROR = 'LOCAL_MODE';
+
+// Fetch wrapper. In serverless/local mode it fails immediately (no network request),
+// so every endpoint below uses its browser-storage implementation.
 async function safeFetch(url, options = {}) {
+  if (!USE_BACKEND) {
+    throw new Error(LOCAL_MODE_ERROR);
+  }
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
@@ -371,6 +394,29 @@ async function safeFetch(url, options = {}) {
     console.warn(`Backend API unreachable at ${url}. Falling back to local storage. Error:`, error.message);
     throw error; // Let the caller deal with the fallback
   }
+}
+
+// Attach browser-stored video blobs to recordings (blob URLs don't survive reloads)
+async function hydrateRecordings(recs) {
+  return Promise.all((recs || []).map(async (r) => {
+    if (!r.blobKey) return r;
+    const url = await resolveBlobUrl(r.blobKey);
+    return { ...r, videoUrl: url || r.videoUrl, unavailable: !url };
+  }));
+}
+
+const todayLabel = () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+// ---- Local course-management helpers ----
+const findUser = (username) => getList('mytutor_users').find(u => u.username === username);
+const userSummary = (u, fallbackUsername) => u
+  ? { username: u.username, name: u.name, email: u.email, avatar: u.avatar, lecturerId: u.lecturerId }
+  : { username: fallbackUsername, name: fallbackUsername };
+
+function pushNotification(notification) {
+  const list = getList('mytutor_notifications');
+  list.unshift({ id: Date.now() + Math.random(), time: 'Just now', isNew: true, color: 'indigo', type: 'system', ...notification });
+  saveMockData('mytutor_notifications', list);
 }
 
 // ==========================================
@@ -502,64 +548,213 @@ export const api = {
 
   // --- Course Management ---
   createCourse: async (courseData) => {
-    return await safeFetch(`${API_BASE_URL}/courses`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(courseData)
-    });
+    try {
+      return await safeFetch(`${API_BASE_URL}/courses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(courseData)
+      });
+    } catch {
+      const courses = getList('mytutor_courses');
+      const ownerUsername = courseData.owner?.username;
+      const course = {
+        id: Date.now(),
+        name: courseData.name,
+        code: courseData.code,
+        description: courseData.description || '',
+        owner: userSummary(findUser(ownerUsername), ownerUsername),
+        modules: []
+      };
+      courses.push(course);
+      saveMockData('mytutor_courses', courses);
+      return course;
+    }
   },
   getOwnedCourses: async (ownerUsername) => {
-    return await safeFetch(`${API_BASE_URL}/courses/owner/${ownerUsername}`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/courses/owner/${ownerUsername}`);
+    } catch {
+      return getList('mytutor_courses').filter(c => c.owner?.username === ownerUsername);
+    }
   },
   getAllCourses: async () => {
-    return await safeFetch(`${API_BASE_URL}/courses`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/courses`);
+    } catch {
+      return getList('mytutor_courses');
+    }
   },
-  
+
   createModule: async (courseId, moduleData) => {
-    return await safeFetch(`${API_BASE_URL}/courses/${courseId}/modules`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(moduleData)
-    });
+    try {
+      return await safeFetch(`${API_BASE_URL}/courses/${courseId}/modules`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moduleData)
+      });
+    } catch {
+      const courses = getList('mytutor_courses');
+      const course = courses.find(c => String(c.id) === String(courseId));
+      if (!course) throw new Error('Course not found');
+      const mod = { id: Date.now(), ...moduleData };
+      course.modules = [...(course.modules || []), mod];
+      saveMockData('mytutor_courses', courses);
+      return mod;
+    }
   },
-  
+
   assignLecturerToModule: async (assignmentData) => {
-    return await safeFetch(`${API_BASE_URL}/assignments/lecturer`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(assignmentData)
-    });
+    try {
+      return await safeFetch(`${API_BASE_URL}/assignments/lecturer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assignmentData)
+      });
+    } catch {
+      const lecturerKey = String(assignmentData.lecturerId || '').trim().toLowerCase();
+      const lecturer = getList('mytutor_users').find(u =>
+        u.role === 'LECTURER' &&
+        ((u.lecturerId && u.lecturerId.toLowerCase() === lecturerKey) || u.username.toLowerCase() === lecturerKey)
+      );
+      if (!lecturer) throw new Error('Lecturer not found');
+
+      let mod = null;
+      let course = null;
+      for (const c of getList('mytutor_courses')) {
+        const m = (c.modules || []).find(x => String(x.id) === String(assignmentData.moduleId));
+        if (m) { mod = m; course = c; break; }
+      }
+      if (!mod) throw new Error('Module not found');
+
+      const invitations = getList('mytutor_lecturerAssignments');
+      const invitation = {
+        id: Date.now(),
+        module: { id: mod.id, name: mod.name, code: mod.code, course: { id: course.id, name: course.name, code: course.code } },
+        lecturer: userSummary(lecturer),
+        groupList: assignmentData.groupList,
+        status: 'PENDING'
+      };
+      invitations.push(invitation);
+      saveMockData('mytutor_lecturerAssignments', invitations);
+      return invitation;
+    }
   },
   getLecturerInvitations: async (lecturerUsername) => {
-    return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${lecturerUsername}`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${lecturerUsername}`);
+    } catch {
+      return getList('mytutor_lecturerAssignments').filter(i => i.lecturer?.username === lecturerUsername);
+    }
   },
   updateInvitationStatus: async (assignmentId, status) => {
-    return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${assignmentId}/status?status=${status}`, {
-      method: 'PUT'
-    });
+    try {
+      return await safeFetch(`${API_BASE_URL}/assignments/lecturer/${assignmentId}/status?status=${status}`, {
+        method: 'PUT'
+      });
+    } catch {
+      const invitations = getList('mytutor_lecturerAssignments');
+      const inv = invitations.find(i => String(i.id) === String(assignmentId));
+      if (!inv) throw new Error('Invitation not found');
+      inv.status = status;
+      saveMockData('mytutor_lecturerAssignments', invitations);
+
+      if (status === 'ACCEPTED') {
+        // Make the module available in the global module catalogue, taught by this lecturer
+        const modules = getList('mytutor_modules');
+        const existing = modules.find(m => m.code === inv.module.code);
+        if (existing) {
+          existing.lecturer = inv.lecturer.name;
+        } else {
+          modules.push({
+            id: Date.now(),
+            name: inv.module.name,
+            code: inv.module.code,
+            lecturer: inv.lecturer.name,
+            progress: 0,
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-600',
+            icon: '📚',
+            schedule: 'TBD Schedule'
+          });
+        }
+        saveMockData('mytutor_modules', modules);
+      }
+      return inv;
+    }
   },
 
   applyForCourse: async (applicationData) => {
-    return await safeFetch(`${API_BASE_URL}/applications`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(applicationData)
-    });
+    try {
+      return await safeFetch(`${API_BASE_URL}/applications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(applicationData)
+      });
+    } catch {
+      const course = getList('mytutor_courses').find(c => String(c.id) === String(applicationData.courseId));
+      if (!course) throw new Error('Course not found');
+      const mod = applicationData.moduleId
+        ? (course.modules || []).find(m => String(m.id) === String(applicationData.moduleId))
+        : null;
+      const applications = getList('mytutor_applications');
+      const application = {
+        id: Date.now(),
+        student: userSummary(findUser(applicationData.studentUsername), applicationData.studentUsername),
+        course: { id: course.id, name: course.name, code: course.code },
+        module: mod ? { id: mod.id, name: mod.name, code: mod.code } : null,
+        status: 'PENDING',
+        feedback: '',
+        date: todayLabel()
+      };
+      applications.push(application);
+      saveMockData('mytutor_applications', applications);
+      return application;
+    }
   },
   getCourseApplications: async (courseId) => {
-    return await safeFetch(`${API_BASE_URL}/applications/course/${courseId}`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/applications/course/${courseId}`);
+    } catch {
+      return getList('mytutor_applications').filter(a => String(a.course?.id) === String(courseId));
+    }
   },
   updateApplicationStatus: async (applicationId, status, feedback) => {
-    const url = `${API_BASE_URL}/applications/${applicationId}/status?status=${status}${feedback ? `&feedback=${encodeURIComponent(feedback)}` : ''}`;
-    return await safeFetch(url, {
-      method: 'PUT'
-    });
+    try {
+      const url = `${API_BASE_URL}/applications/${applicationId}/status?status=${status}${feedback ? `&feedback=${encodeURIComponent(feedback)}` : ''}`;
+      return await safeFetch(url, {
+        method: 'PUT'
+      });
+    } catch {
+      const applications = getList('mytutor_applications');
+      const app = applications.find(a => String(a.id) === String(applicationId));
+      if (!app) throw new Error('Application not found');
+      app.status = status;
+      if (feedback) app.feedback = feedback;
+      saveMockData('mytutor_applications', applications);
+      pushNotification({
+        type: 'system',
+        title: `Application ${status === 'ACCEPTED' ? 'Accepted' : 'Rejected'}`,
+        desc: `Your application for ${app.module ? app.module.name : app.course.name} was ${status.toLowerCase()}.${feedback ? ` Feedback: "${feedback}"` : ''}`,
+        color: status === 'ACCEPTED' ? 'emerald' : 'rose'
+      });
+      return app;
+    }
   },
   getStudentApplications: async (studentUsername) => {
-    return await safeFetch(`${API_BASE_URL}/applications/student/${studentUsername}`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/applications/student/${studentUsername}`);
+    } catch {
+      return getList('mytutor_applications').filter(a => a.student?.username === studentUsername);
+    }
   },
   getLecturerModules: async (lecturerUsername) => {
-    return await safeFetch(`${API_BASE_URL}/courses/lecturer-modules/${lecturerUsername}`);
+    try {
+      return await safeFetch(`${API_BASE_URL}/courses/lecturer-modules/${lecturerUsername}`);
+    } catch {
+      return getList('mytutor_lecturerAssignments')
+        .filter(i => i.lecturer?.username === lecturerUsername && i.status === 'ACCEPTED')
+        .map(i => i.module);
+    }
   },
 
   // 2. Modules
@@ -642,6 +837,11 @@ export const api = {
         const oldStatus = assignments[index].status;
         assignments[index].status = 'Submitted';
         assignments[index].submissionFileName = file.name;
+        try {
+          assignments[index].submissionBlobKey = await putBlob(`assignment-${id}-submission`, file);
+        } catch (storeErr) {
+          console.warn('Could not store submission file in browser storage:', storeErr);
+        }
         saveMockData('mytutor_assignments', assignments);
 
         if (oldStatus !== 'Submitted' && oldStatus !== 'Graded') {
@@ -655,8 +855,8 @@ export const api = {
         notifications.unshift({
           id: Date.now(),
           type: 'system',
-          title: 'Submission Successful (Local Fallback)',
-          desc: `Your file '${file.name}' was successfully uploaded locally.`,
+          title: 'Submission Successful',
+          desc: `Your file '${file.name}' was successfully uploaded.`,
           time: 'Just now',
           isNew: true,
           color: 'indigo'
@@ -668,6 +868,31 @@ export const api = {
   },
   getAssignmentBriefUrl: (id) => {
     return `${API_BASE_URL}/assignments/${id}/download`;
+  },
+  downloadAssignmentBrief: async (id) => {
+    if (USE_BACKEND) {
+      window.open(`${API_BASE_URL}/assignments/${id}/download`, '_blank');
+      return;
+    }
+    const a = getList('mytutor_assignments').find(x => x.id === Number(id));
+    if (!a) return;
+    const stored = a.briefBlobKey ? await getBlob(a.briefBlobKey) : null;
+    if (stored) {
+      saveBlobAs(stored, a.briefFileName || `${a.title}.pdf`);
+      return;
+    }
+    const text = [
+      `ASSIGNMENT BRIEF`,
+      ``,
+      `Title:    ${a.title}`,
+      `Module:   ${a.module}`,
+      `Due date: ${a.dueDate}`,
+      `Weight:   ${a.weight || '-'}`,
+      `Priority: ${a.priority || '-'}`,
+      ``,
+      `Complete the assignment and upload your submission through the myTutor portal before the due date.`
+    ].join('\n');
+    saveBlobAs(new Blob([text], { type: 'text/plain' }), `${a.title.replace(/[^\w-]+/g, '_')}_brief.txt`);
   },
 
   // 4. Marks & Assessments
@@ -767,7 +992,7 @@ export const api = {
       notifications.unshift({
         id: Date.now(),
         type: 'system',
-        title: 'Remark Requested (Local Fallback)',
+        title: 'Remark Requested',
         desc: `You requested a remark for ${assessmentType} in ${moduleCode}.`,
         time: 'Just now',
         isNew: true,
@@ -796,6 +1021,22 @@ export const api = {
   getFileDownloadUrl: (id) => {
     return `${API_BASE_URL}/content/files/${id}/download`;
   },
+  downloadFile: async (id) => {
+    if (USE_BACKEND) {
+      window.open(`${API_BASE_URL}/content/files/${id}/download`, '_blank');
+      return;
+    }
+    const f = getList('mytutor_files').find(x => String(x.id) === String(id));
+    if (!f) return;
+    const blob = f.blobKey ? await getBlob(f.blobKey) : null;
+    if (blob) {
+      saveBlobAs(blob, f.name);
+      return;
+    }
+    // Sample/demo files have no stored content; give the user a placeholder document
+    const text = `${f.name}\n\nThis is a sample resource from the ${f.folderName} folder (uploaded ${f.date}).\nUpload real files from the lecturer "Upload Resources" page.`;
+    saveBlobAs(new Blob([text], { type: 'text/plain' }), `${f.name.replace(/\.[^.]+$/, '')}.txt`);
+  },
   uploadContentFile: async (folderName, file) => {
     try {
       const formData = new FormData();
@@ -807,14 +1048,22 @@ export const api = {
     } catch {
       const files = getMockData('mytutor_files');
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1) || 'dat';
+      const fileId = Date.now();
+      let blobKey = null;
+      try {
+        blobKey = await putBlob(`content-${fileId}`, file);
+      } catch (storeErr) {
+        console.warn('Could not store file in browser storage:', storeErr);
+      }
 
       const newFile = {
-        id: Date.now(),
+        id: fileId,
         name: file.name,
         size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        date: todayLabel(),
         type: ext.toLowerCase(),
-        folderName
+        folderName,
+        blobKey
       };
       files.push(newFile);
       saveMockData('mytutor_files', files);
@@ -832,8 +1081,8 @@ export const api = {
       notifications.unshift({
         id: Date.now(),
         type: 'content',
-        title: 'New Study Material (Local Fallback)',
-        desc: `A new file '${file.name}' was uploaded to ${folderName} locally.`,
+        title: 'New Study Material',
+        desc: `A new file '${file.name}' was uploaded to ${folderName}.`,
         time: 'Just now',
         isNew: true,
         color: 'indigo'
@@ -935,15 +1184,15 @@ export const api = {
     try {
       return await safeFetch(`${API_BASE_URL}/recordings`);
     } catch {
-      return getMockData('mytutor_videoRecordings');
+      return hydrateRecordings(getList('mytutor_videoRecordings'));
     }
   },
   getRecordingsByModule: async (moduleCode) => {
     try {
       return await safeFetch(`${API_BASE_URL}/recordings/module/${moduleCode}`);
     } catch {
-      const recs = getMockData('mytutor_videoRecordings') || [];
-      return recs.filter(r => r.moduleCode === moduleCode);
+      const recs = getList('mytutor_videoRecordings');
+      return hydrateRecordings(recs.filter(r => r.moduleCode === moduleCode));
     }
   },
   saveRecording: async (recordingData) => {
@@ -960,9 +1209,11 @@ export const api = {
         uploadDate: new Date().toISOString().split('T')[0],
         ...recordingData
       };
+      // blob: URLs die on reload — persist the IndexedDB key instead
+      if (newRec.blobKey) delete newRec.videoUrl;
       recs.push(newRec);
       saveMockData('mytutor_videoRecordings', recs);
-      return newRec;
+      return (await hydrateRecordings([newRec]))[0];
     }
   },
   uploadVideo: async (file) => {
@@ -973,10 +1224,15 @@ export const api = {
         method: 'POST',
         body: formData
       });
-    } catch (err) {
-      console.warn("Local fallback for video upload");
-      const localUrl = URL.createObjectURL(file);
-      return { videoUrl: localUrl };
+    } catch {
+      const blobKey = `recording-${Date.now()}`;
+      try {
+        await putBlob(blobKey, file);
+        return { videoUrl: await resolveBlobUrl(blobKey), blobKey };
+      } catch (storeErr) {
+        console.warn('Could not persist recording in browser storage:', storeErr);
+        return { videoUrl: URL.createObjectURL(file) };
+      }
     }
   },
   deleteRecording: async (id) => {
@@ -984,6 +1240,8 @@ export const api = {
       await safeFetch(`${API_BASE_URL}/recordings/${id}`, { method: 'DELETE' });
     } catch {
       const recs = getMockData('mytutor_videoRecordings') || [];
+      const target = recs.find(r => r.id === Number(id));
+      if (target && target.blobKey) await deleteBlob(target.blobKey);
       const updated = recs.filter(r => r.id !== Number(id));
       saveMockData('mytutor_videoRecordings', updated);
     }
@@ -999,9 +1257,14 @@ export const api = {
       const recs = getMockData('mytutor_videoRecordings') || [];
       const index = recs.findIndex(r => r.id === Number(id));
       if (index !== -1) {
-        recs[index] = { ...recs[index], ...recordingData };
+        const updates = { ...recordingData };
+        if (recs[index].blobKey) {
+          delete updates.videoUrl;
+          delete updates.unavailable;
+        }
+        recs[index] = { ...recs[index], ...updates };
         saveMockData('mytutor_videoRecordings', recs);
-        return recs[index];
+        return (await hydrateRecordings([recs[index]]))[0];
       }
       return null;
     }

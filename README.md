@@ -1,18 +1,20 @@
 # ✨ myTutor - Divine University Student Portal ✨
 
-myTutor is a state-of-the-art, premium, and fully-featured academic hub designed for students and lecturers at Divine University. Built with a modern, high-fidelity dark/light user interface, smooth micro-animations, and dynamic data visualization, myTutor bridges the gap between student portals and live learning platforms.
+myTutor is a modern, full-featured academic hub for students and lecturers at Divine University — built with a responsive dark/light user interface, smooth micro-animations, data visualizations, and browser-to-browser live video classes.
+
+It is designed to run **entirely on static hosting (Vercel)** with **zero backend hosting required**: structured data lives in `localStorage`, uploaded files and recorded lectures are stored in the browser's `IndexedDB`, and live classes (chat + WebRTC signaling) use a serverless WebSocket/BroadcastChannel relay.
 
 ---
 
 ## 🚀 Key Features
 
-*   **🎥 WebRTC Live Broadcasts & Chat**: Lecturers can broadcast live video classes with webcams and screen sharing directly from their browser, while students join dynamically. Integrated room-based WebSocket chat facilitates real-time Q&A.
-*   **💾 Video Recording & Cloud Uploads**: Live sessions can be recorded in-browser and uploaded directly to the backend to make them immediately available for students under past recordings.
-*   **📊 Dynamic Grade Tracker**: Visualize academic performance distributions, calculate GPA, track grade trends, and request remarks using modern charts powered by Recharts.
-*   **📝 Assignment Submission Hub**: View upcoming assignments, download briefs, upload submissions, and track statuses (Pending, Late, Graded, Submitted).
-*   **📚 Module Catalogs & Resources**: Lecturers can organize folders, upload course materials, and post dynamic announcements for student view.
-*   **👥 Class Directory**: Access university classmate directories and initiate immediate communication channels.
-*   **🌓 Adaptive Dark Mode**: A sleek, fully dark-themed workspace tailored to improve focus and reduce eye strain.
+*   **🎥 WebRTC Live Broadcasts & Chat**: Lecturers broadcast live webcam or screen-share classes directly from their browser; students join from another tab or device with real-time room chat.
+*   **💾 In-Browser Video Recording**: Live sessions can be recorded with `MediaRecorder` and saved directly to `IndexedDB` so they remain playable under *Previous Session Recordings* across page reloads.
+*   **📊 Dynamic Grade Tracker**: Visualize academic performance distributions, calculate GPA, track grade trends, and request remarks using Recharts.
+*   **📝 Assignment & Online Activity Hub**: View assignments, download briefs, upload submissions, create/grade quizzes and webtests (with proctored full-screen exam mode).
+*   **🎓 Course & Module Management**: Lecturers can create courses and modules, invite other lecturers by Lecturer ID, and review student course applications.
+*   **📚 Resource Library & Announcements**: Organize folders, upload/download course materials, and post module announcements.
+*   **🌓 Adaptive Dark / Light Mode**: Theme toggle with persistent user preference.
 
 ---
 
@@ -20,120 +22,69 @@ myTutor is a state-of-the-art, premium, and fully-featured academic hub designed
 
 | Component | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend Core** | React 19 + Vite | Ultra-fast SPA rendering and Hot Module Replacement (HMR) |
-| **Styling** | Tailwind CSS v4 + PostCSS | Modern design tokens and utility-first responsive layout |
-| **Animations** | Framer Motion | Fluid transitions, hover scaling, and entry animations |
-| **Visualizations** | Recharts | Interactive SVG charts and marks distribution visualization |
-| **Icons** | Lucide React | High-quality, clean vector iconography |
-| **Backend Core** | Java 17 + Spring Boot 3.2 | Enterprise-grade REST APIs and services |
-| **Real-time** | Spring WebSockets | Low-latency chat messaging and WebRTC signaling control |
-| **Data Layer** | Spring Data JPA | Object-relational mapping and database abstraction |
-| **Databases** | H2 (Local) / PostgreSQL (Prod) | Seamless transition from local file DB to production databases |
-| **Deployment** | Docker, Vercel, Render | Streamlined containerized builds and serverless frontend host |
+| **Frontend Core** | React 19 + Vite | Fast SPA rendering and code-split routes |
+| **Styling** | Tailwind CSS v4 | Design tokens and utility-first responsive layout |
+| **Animations** | Framer Motion | Transitions and entry animations |
+| **Visualizations** | Recharts | Interactive charts and mark distributions |
+| **Icons** | Lucide React | Vector iconography |
+| **Client Storage** | `localStorage` + `IndexedDB` | Zero-server persistence for portal data, uploaded files, and recorded videos |
+| **Live Signaling & Chat** | WebRTC + MQTT over WSS + `BroadcastChannel` | Peer-to-peer video streaming and live room chat without a hosted backend |
+| **Deployment** | Vercel | Static SPA deployment (no Render / Docker / DB required) |
 
 ---
 
-## 💻 Local Development Setup
+## 🔑 Demo Accounts
 
-To run myTutor locally, follow these steps:
+| Role | Username | Password | Name | Lecturer ID |
+| :--- | :--- | :--- | :--- | :--- |
+| **Student** | `11101` | `STVine@123` | Jonathan Doe | — |
+| **Student** | `11201` | `STAndie@123` | Sarah Connor | — |
+| **Student** | `11301` | `STZya@123` | Marcus Wright | — |
+| **Lecturer** | `TeachAndie` | `TAndie@123` | Dr. Andrea Vine | `dav-101` |
+| **Lecturer** | `TeachVine` | `TVine@123` | Prof. Vincent Taylor | `pvt-102` |
+| **Lecturer** | `TeachMya` | `TZya@123` | Dr. Mya Zya | `dmz-103` |
 
-### 1. Backend Service
-Make sure you have **Java 17** and **Maven** installed.
-
-1. Navigate to the `backend/` directory:
-   ```bash
-   cd backend
-   ```
-2. Copy `.env.example` to `.env` (or configure your local environment variables):
-   ```bash
-   cp .env.example .env
-   ```
-3. Run the Spring Boot application:
-   ```bash
-   mvn spring-boot:run
-   ```
-   The backend will run on `http://localhost:8080`. The local H2 database console is accessible at `http://localhost:8080/h2-console` (default Username: `sa`, Password: ``).
-
-### 2. Frontend client
-Make sure you have **Node.js** installed.
-
-1. Navigate to the root directory and install dependencies:
-   ```bash
-   npm install
-   ```
-2. Copy the `.env.example` file to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   *By default, the `.env` points to `http://localhost:8080/api` for API requests and `localhost:8080` for WebSockets.*
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your web browser.
+You can also register new student or lecturer accounts from the login screen, or use the quick role switcher in the top navbar.
 
 ---
 
-## 🌐 Production Deployment Guide
+## 💻 Local Development
 
-Follow these steps to deploy myTutor in production.
+Make sure you have **Node.js** (v18+) installed.
 
-### Part 1: GitHub Repository Setup
-1. Create a **new private or public repository** on GitHub.
-2. Initialize your git repository locally and commit your files:
-   ```bash
-   git init
-   ```
-   *(Note: The updated [.gitignore](.gitignore) automatically protects your local configuration files `.env` and backend compiled files/database folders from being committed).*
-3. Add the remote repository and push your branch:
-   ```bash
-   git remote add origin <your-github-repo-url>
-   git branch -M main
-   git push -u origin main
-   ```
+```bash
+npm install
+npm run dev
+```
 
-### Part 2: Backend Deployment on Render (using Docker)
-Render makes it easy to build and run the Java backend using the root-level `backend/Dockerfile`.
+Open the URL printed in the terminal (default `http://localhost:5178`). No backend process or `.env` file is needed.
 
-1. Sign in to your [Render Console](https://dashboard.render.com).
-2. Click **New +** and select **Web Service**.
-3. Connect your GitHub repository containing the myTutor code.
-4. Configure the Web Service settings:
-   *   **Name**: `mytutor-backend`
-   *   **Region**: Select a region close to your users
-   *   **Branch**: `main`
-   *   **Runtime**: `Docker`
-   *   **Docker Build Context**: `backend` *(CRITICAL: Set this to `backend` so Render builds from inside the backend directory)*
-   *   **Dockerfile Path**: `Dockerfile`
-5. Click **Advanced** and add the following **Environment Variables**:
-   *   `PORT`: `8080`
-   *   *(Optional but Recommended)* Connect a **Render PostgreSQL database** and configure:
-       *   `SPRING_DATASOURCE_URL`: `jdbc:postgresql://<your-db-host>:<port>/<db-name>`
-       *   `SPRING_DATASOURCE_USERNAME`: `<your-db-username>`
-       *   `SPRING_DATASOURCE_PASSWORD`: `<your-db-password>`
-       *   `SPRING_DATASOURCE_DRIVER`: `org.postgresql.Driver`
-6. Click **Deploy Web Service**. Render will build the Docker container and start your Spring Boot API. Take note of the service URL generated by Render (e.g., `https://mytutor-backend.onrender.com`).
+---
 
-> [!WARNING]
-> **Data Persistence Warning:** If you deploy using the default H2 database config on Render without linking a persistent disk, database records and uploaded files in `backend/uploads` will be wiped whenever the Render container spins down or re-deploys. Setting up a Render PostgreSQL database is highly recommended for persistent data storage.
+## 🌐 Deploying on Vercel (No Backend Required)
 
-### Part 3: Frontend Deployment on Vercel
-Vercel is the recommended host for static React + Vite web applications.
+The project includes a pre-configured [`vercel.json`](vercel.json) and runs on Vercel out of the box:
 
-1. Sign in to your [Vercel Dashboard](https://vercel.com).
-2. Click **Add New** and select **Project**.
-3. Import your GitHub repository.
-4. Configure the Project settings:
-   *   **Framework Preset**: Select **Vite** (Vercel should auto-detect this).
-   *   **Root Directory**: Keep as project root `./` (not backend).
+1. Push this repository to GitHub / GitLab / Bitbucket.
+2. In the [Vercel Dashboard](https://vercel.com), click **Add New → Project** and import the repository.
+3. Verify the auto-detected settings:
+   *   **Framework Preset**: `Vite`
+   *   **Root Directory**: `./`
    *   **Build Command**: `npm run build`
    *   **Output Directory**: `dist`
-5. Under **Environment Variables**, expand it and add:
-   *   `VITE_API_URL`: `https://<your-render-app-url>.onrender.com/api` (Replace with your actual Render backend URL)
-   *   `VITE_API_WS_URL`: `<your-render-app-url>.onrender.com` (Do **not** include `https://` or trailing slashes, e.g. `mytutor-backend.onrender.com`)
-6. Click **Deploy**. Vercel will bundle the React application and deploy it globally. You can now access your fully-functional portal!
+4. Click **Deploy** — **no environment variables or backend services (Render, Railway, etc.) are required.**
+
+### Optional Environment Variables
+
+If you want to customize the serverless live-class relay in Vercel → *Project Settings → Environment Variables*:
+
+| Variable | Default | Purpose |
+| :--- | :--- | :--- |
+| `VITE_MQTT_URL` | `wss://broker.emqx.io:8084/mqtt` | Public MQTT-over-WebSocket relay used for cross-device live class chat & WebRTC signaling. Set to `off` for same-browser-only (`BroadcastChannel`). |
+| `VITE_REALTIME_NAMESPACE` | `mytutor-divine-university` | Isolates your deployment's live class rooms on the public relay. |
 
 ---
 
 ## 📄 License
-This project is developed for student portals at Divine University. Feel free to clone, adapt, and improve the portal!
+
+Developed for student portals at Divine University. Feel free to clone, adapt, and improve!

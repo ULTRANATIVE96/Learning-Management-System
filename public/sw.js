@@ -1,4 +1,8 @@
-const CACHE_NAME = 'mytutor-cache-v1';
+// myTutor service worker
+// - HTML/navigation requests: network-first (so new Vercel deployments are picked up immediately;
+//   a cache-first index.html would point at old hashed bundles that no longer exist → blank page)
+// - Static assets (hashed JS/CSS, icons): cache-first
+const CACHE_NAME = 'mytutor-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -8,51 +12,55 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : undefined)))
+    )
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET' || event.request.url.startsWith('ws') || event.request.url.includes('chrome-extension')) {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  // Only handle same-origin http(s) requests (skip websockets, extensions, CDNs, APIs)
+  if (url.origin !== self.location.origin) return;
+
+  const isNavigation = request.mode === 'navigate' ||
+    (request.headers.get('accept') || '').includes('text/html');
+
+  if (isNavigation) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match('/index.html'))
+    );
     return;
   }
-  
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      
-      return fetch(event.request).then((response) => {
-        if (response.status === 200 && (event.request.url.includes('.js') || event.request.url.includes('.css') || event.request.url.includes('.png') || event.request.url.includes('.svg'))) {
-          const cacheCopy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, cacheCopy);
-          });
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        if (response.status === 200 && /\.(js|css|png|svg|ico|woff2?)$/.test(url.pathname)) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }
         return response;
-      }).catch(() => {
-        if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('/index.html');
-        }
       });
     })
   );

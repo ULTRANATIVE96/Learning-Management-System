@@ -24,7 +24,18 @@
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0b0f19" />
+    <meta name="theme-color" content="#0f1117" />
+    <!-- Apply saved theme before first paint to avoid a bright flash -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('mytutor_theme') === 'theme-white' ? 'theme-white' : 'theme-black';
+          document.documentElement.classList.add(t);
+        } catch (e) {
+          document.documentElement.classList.add('theme-black');
+        }
+      })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

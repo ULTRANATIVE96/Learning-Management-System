@@ -1,42 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  MessageSquare, 
-  Send, 
-  Users, 
-  Power, 
-  Play, 
-  Camera, 
-  Sparkles, 
-  Check, 
-  Info, 
-  Monitor, 
-  Edit, 
-  Trash2, 
-  Download, 
-  Eye, 
-  X, 
-  Search 
+import {
+  Video,
+  VideoOff,
+  Mic,
+  MicOff,
+  MessageSquare,
+  Send,
+  Users,
+  Power,
+  Play,
+  Camera,
+  Sparkles,
+  Check,
+  Info,
+  Monitor,
+  Edit,
+  Trash2,
+  Download,
+  Eye,
+  X,
+  Search
 } from 'lucide-react';
-import { api, getChatWebSocketUrl } from '../utils/api';
+import { api, openRoomSocket, describeRealtime, announceLiveSession } from '../utils/api';
 
 export default function HostLiveClass({ user, searchQuery }) {
   const [modules, setModules] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
-  
+
   // Setup forms
   const [topic, setTopic] = useState('');
   const [selectedModule, setSelectedModule] = useState('');
-  
+
   // Media states
   const [cameraActive, setCameraActive] = useState(true);
   const [micActive, setMicActive] = useState(true);
   const [mediaStream, setMediaStream] = useState(null);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  
+
   // Chat / Socket states
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
@@ -49,7 +49,7 @@ export default function HostLiveClass({ user, searchQuery }) {
   const [editTitle, setEditTitle] = useState('');
   const [editModule, setEditModule] = useState('');
   const [watchingRecording, setWatchingRecording] = useState(null);
-  
+
   const videoRef = useRef(null);
   const wsRef = useRef(null);
   const chatEndRef = useRef(null);
@@ -59,6 +59,7 @@ export default function HostLiveClass({ user, searchQuery }) {
   const recorderRef = useRef(null);
   const chunksRef = useRef([]);
   const sessionStartTimeRef = useRef(null);
+  const stopAnnounceRef = useRef(null);
 
   // Load recordings
   const loadRecordings = async () => {
@@ -84,12 +85,13 @@ export default function HostLiveClass({ user, searchQuery }) {
     }
     loadModules();
     loadRecordings();
-    
+
     return () => {
       // Clean up connections on unmount
       stopCamera();
       closeAllPeerConnections();
       if (wsRef.current) wsRef.current.close();
+      if (stopAnnounceRef.current) stopAnnounceRef.current();
     };
   }, []);
 
@@ -115,11 +117,11 @@ export default function HostLiveClass({ user, searchQuery }) {
     let angle = 0;
     const intervalId = setInterval(() => {
       if (!ctx) return;
-      
+
       // Draw background - deep night-red theme
       ctx.fillStyle = '#180202';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       // Rotating gradient circle in the middle
       ctx.save();
       ctx.translate(canvas.width / 2, canvas.height / 2 - 20);
@@ -133,17 +135,17 @@ export default function HostLiveClass({ user, searchQuery }) {
       ctx.arc(0, 0, 75, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
-      
+
       // Draw details
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 18px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText("myTutor LIVE Broadcast Feed", canvas.width / 2, canvas.height / 2 + 90);
-      
+
       ctx.fillStyle = '#fde68a'; // Light yellow
       ctx.font = '13px sans-serif';
       ctx.fillText(`Subject Code: ${selectedModule} • Topic: ${topic || 'Class'}`, canvas.width / 2, canvas.height / 2 + 115);
-      
+
       // Pulsing reddish soundwave
       ctx.strokeStyle = '#ef4444';
       ctx.lineWidth = 3;
@@ -155,7 +157,7 @@ export default function HostLiveClass({ user, searchQuery }) {
         else ctx.lineTo(x, y);
       }
       ctx.stroke();
-      
+
       angle += 0.04;
     }, 1000 / 30);
 
@@ -269,12 +271,12 @@ export default function HostLiveClass({ user, searchQuery }) {
     if (videoRef.current) {
       videoRef.current.srcObject = mediaStream;
     }
-    
+
     // Update WebRTC senders with new tracks when mediaStream changes
     if (mediaStream) {
       const videoTrack = mediaStream.getVideoTracks()[0];
       const audioTrack = mediaStream.getAudioTracks()[0];
-      
+
       Object.keys(pcsRef.current).forEach(studentId => {
         const pc = pcsRef.current[studentId];
         if (pc && pc.connectionState !== 'closed') {
@@ -283,15 +285,15 @@ export default function HostLiveClass({ user, searchQuery }) {
           if (videoSender && videoTrack) {
             videoSender.replaceTrack(videoTrack);
           } else if (!videoSender && videoTrack) {
-            try { pc.addTrack(videoTrack, mediaStream); } catch (e) {}
+            try { pc.addTrack(videoTrack, mediaStream); } catch (e) { }
           }
-          
+
           // Find audio sender and replace track
           const audioSender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
           if (audioSender && audioTrack) {
             audioSender.replaceTrack(audioTrack);
           } else if (!audioSender && audioTrack) {
-            try { pc.addTrack(audioTrack, mediaStream); } catch (e) {}
+            try { pc.addTrack(audioTrack, mediaStream); } catch (e) { }
           }
         }
       });
@@ -302,7 +304,7 @@ export default function HostLiveClass({ user, searchQuery }) {
   useEffect(() => {
     if (activeSession && mediaStream) {
       console.log("WebRTC/Recording: Starting MediaRecorder on active stream");
-      
+
       if (recorderRef.current && recorderRef.current.state !== 'inactive') {
         try {
           recorderRef.current.stop();
@@ -310,11 +312,11 @@ export default function HostLiveClass({ user, searchQuery }) {
           console.warn("Failed to stop previous recorder:", e);
         }
       }
-      
+
       try {
         const hasAudio = mediaStream.getAudioTracks().length > 0;
         let options = {};
-        
+
         if (typeof MediaRecorder.isTypeSupported === 'function') {
           if (hasAudio && MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
             options = { mimeType: 'video/webm;codecs=vp8,opus' };
@@ -324,21 +326,21 @@ export default function HostLiveClass({ user, searchQuery }) {
             options = { mimeType: 'video/webm' };
           }
         }
-        
+
         console.log("WebRTC/Recording: Initializing MediaRecorder with options:", options);
         const recorder = new MediaRecorder(mediaStream, options);
-        
+
         recorder.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) {
             chunksRef.current.push(e.data);
             console.log("Recorded chunk size:", e.data.size, "Total chunks:", chunksRef.current.length);
           }
         };
-        
+
         recorder.onstop = () => {
           console.log("MediaRecorder stopped.");
         };
-        
+
         recorder.start(1000); // chunk every 1 second
         recorderRef.current = recorder;
       } catch (err) {
@@ -348,7 +350,7 @@ export default function HostLiveClass({ user, searchQuery }) {
       if (recorderRef.current && recorderRef.current.state !== 'inactive') {
         try {
           recorderRef.current.stop();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }, [mediaStream, activeSession]);
@@ -375,18 +377,21 @@ export default function HostLiveClass({ user, searchQuery }) {
       // Start webcam preview
       await startCamera();
 
-      // Initialize WebSocket connection
+      // Initialize realtime room connection (chat + WebRTC signaling)
       connectWebSocket(selectedModule);
+
+      // Let students on other devices discover this live session
+      if (stopAnnounceRef.current) stopAnnounceRef.current();
+      stopAnnounceRef.current = announceLiveSession(session);
     } catch (err) {
       alert("Failed to start live session: " + err.message);
     }
   };
 
   const connectWebSocket = (roomCode) => {
-    const wsUrl = getChatWebSocketUrl(roomCode);
-    console.log("Connecting to WebSocket room:", wsUrl);
-    
-    const ws = new WebSocket(wsUrl);
+    console.log("Connecting to live room:", roomCode);
+
+    const ws = openRoomSocket(roomCode);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -404,15 +409,15 @@ export default function HostLiveClass({ user, searchQuery }) {
     ws.onmessage = async (event) => {
       try {
         const msg = JSON.parse(event.data);
-        
+
         // Intercept SYSTEM_RTC signaling messages
         if (msg.sender === 'SYSTEM_RTC') {
           const signaling = JSON.parse(msg.content);
-          
+
           // Only process signaling messages targeted to us (the lecturer)
           if (signaling.to === 'lecturer') {
             const studentId = signaling.from;
-            
+
             if (signaling.rtcType === 'join') {
               console.log(`WebRTC: Student ${studentId} requested to join stream`);
               // 1. Create peer connection for student
@@ -420,13 +425,13 @@ export default function HostLiveClass({ user, searchQuery }) {
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
               });
               pcsRef.current[studentId] = pc;
-              
+
               // 2. Add local media stream tracks
               const activeStream = mediaStreamRef.current;
               if (activeStream) {
                 activeStream.getTracks().forEach(track => pc.addTrack(track, activeStream));
               }
-              
+
               // 3. Handle ICE candidates
               pc.onicecandidate = (e) => {
                 if (e.candidate) {
@@ -438,7 +443,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                   });
                 }
               };
-              
+
               // 4. Create and send Offer
               const offer = await pc.createOffer();
               await pc.setLocalDescription(offer);
@@ -466,7 +471,7 @@ export default function HostLiveClass({ user, searchQuery }) {
         }
 
         setMessages(prev => [...prev, msg]);
-        
+
         // Simulating incremental student joining
         if (msg.content.includes("joined the class")) {
           setStudentCount(prev => prev + 1);
@@ -523,9 +528,13 @@ export default function HostLiveClass({ user, searchQuery }) {
   const handleEndSession = async () => {
     if (!activeSession) return;
     const saveRecordingConfirm = window.confirm("Do you want to save a lecture video recording of this session for the students?");
-    
+
     try {
-      // 1. Terminate the active session on backend
+      // 1. Terminate the active session
+      if (stopAnnounceRef.current) {
+        stopAnnounceRef.current();
+        stopAnnounceRef.current = null;
+      }
       await api.deleteLiveSession(activeSession.id);
 
       // 2. Save video recording if lecturer agreed
@@ -535,20 +544,21 @@ export default function HostLiveClass({ user, searchQuery }) {
           if (recorderRef.current && recorderRef.current.state !== 'inactive') {
             try {
               recorderRef.current.stop();
-            } catch (e) {}
+            } catch (e) { }
           }
-          
+
           await new Promise(resolve => setTimeout(resolve, 600));
-          
+
           let videoUrl = null;
+          let blobKey = null;
           let sizeStr = "0 MB";
           let durationStr = "0 secs";
-          
+
           if (chunksRef.current.length > 0) {
             try {
               const videoBlob = new Blob(chunksRef.current, { type: 'video/webm' });
               sizeStr = `${(videoBlob.size / (1024 * 1024)).toFixed(1)} MB`;
-              
+
               if (sessionStartTimeRef.current) {
                 const diffMs = Date.now() - sessionStartTimeRef.current;
                 const diffMins = Math.floor(diffMs / 60000);
@@ -559,14 +569,15 @@ export default function HostLiveClass({ user, searchQuery }) {
                   durationStr = `${diffSecs} sec${diffSecs > 1 ? 's' : ''}`;
                 }
               }
-              
+
               alert("Uploading the recorded lecture video. Please click OK and wait for completion...");
               const uploadRes = await api.uploadVideo(videoBlob);
               if (uploadRes && uploadRes.videoUrl) {
-                if (uploadRes.videoUrl.startsWith('blob:')) {
+                blobKey = uploadRes.blobKey || null;
+                if (uploadRes.videoUrl.startsWith('blob:') || /^https?:/.test(uploadRes.videoUrl)) {
                   videoUrl = uploadRes.videoUrl;
                 } else {
-                  const backendHost = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8080';
+                  const backendHost = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
                   videoUrl = `${backendHost}${uploadRes.videoUrl}`;
                 }
                 console.log("Uploaded video absolute URL:", videoUrl);
@@ -576,13 +587,14 @@ export default function HostLiveClass({ user, searchQuery }) {
               alert("Uploading recording failed.");
             }
           }
-          
+
           if (!videoUrl) {
             alert("Unable to save recording: No video chunks were captured or the upload failed. Please verify your camera/audio permissions.");
           } else {
             const recordingData = {
               title: recordingName,
               videoUrl: videoUrl,
+              blobKey: blobKey || undefined,
               moduleCode: selectedModule,
               duration: durationStr,
               size: sizeStr
@@ -606,7 +618,7 @@ export default function HostLiveClass({ user, searchQuery }) {
           sessionCode: selectedModule,
           timestamp: new Date().toISOString()
         };
-        try { wsRef.current.send(JSON.stringify(leaveMsg)); } catch {}
+        try { wsRef.current.send(JSON.stringify(leaveMsg)); } catch { }
         wsRef.current.close();
       }
 
@@ -777,7 +789,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                   <h2 className="text-base font-bold text-slate-955 text-white">Manage Saved Video Recordings</h2>
                   <p className="text-[11px] text-slate-505 mt-0.5">Watch, download, edit, or delete previous recordings.</p>
                 </div>
-                
+
                 {/* Search bar */}
                 <div className="relative shrink-0 w-full sm:w-64">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
@@ -922,7 +934,7 @@ export default function HostLiveClass({ user, searchQuery }) {
                   <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest block">Lecture Topic</span>
                   <h3 className="text-base font-bold truncate">{topic}</h3>
                 </div>
-                
+
                 {/* Control switches */}
                 <div className="flex items-center gap-2">
                   <button
@@ -980,7 +992,7 @@ export default function HostLiveClass({ user, searchQuery }) {
             {/* End session buttons */}
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs text-slate-400 font-semibold">
-                Room connection active • ws://localhost:8080/chat
+                Room connection active • {describeRealtime()}
               </span>
               <button
                 onClick={handleEndSession}
@@ -1067,8 +1079,8 @@ export default function HostLiveClass({ user, searchQuery }) {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="font-bold text-sm text-white">Edit Recording Metadata</h3>
-              <button 
-                onClick={() => setEditingRecording(null)} 
+              <button
+                onClick={() => setEditingRecording(null)}
                 className="p-1 text-slate-555 hover:text-rose-500 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
@@ -1128,8 +1140,8 @@ export default function HostLiveClass({ user, searchQuery }) {
                 </span>
                 <h3 className="font-bold text-sm mt-1">{watchingRecording.title}</h3>
               </div>
-              <button 
-                onClick={() => setWatchingRecording(null)} 
+              <button
+                onClick={() => setWatchingRecording(null)}
                 className="p-1.5 bg-slate-800 hover:bg-rose-600 rounded-xl transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />

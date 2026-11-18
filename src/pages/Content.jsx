@@ -64,7 +64,7 @@ export default function Content() {
   };
 
   const handleDownload = (id) => {
-    window.open(api.getFileDownloadUrl(id), '_blank');
+    api.downloadFile(id);
   };
 
   const triggerUpload = () => {
